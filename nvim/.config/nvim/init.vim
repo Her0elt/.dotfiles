@@ -31,7 +31,6 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
 
 " Debugger Plugins
-Plug 'puremourning/vimspector'
 Plug 'szw/vim-maximizer'
 
 " THANKS BFREDL
@@ -78,7 +77,6 @@ let &runtimepath.=',/home/theprimeagen/personal/refactoring.nvim'
 
 " let g:vimspector_install_gadgets = [ 'debugpy', 'vscode-cpptools', 'CodeLLDB' ]
 
-lua require("theprimeagen")
 lua require'nvim-treesitter.configs'.setup { highlight = { enable = true }, incremental_selection = { enable = true }, textobjects = { enable = true }}
 let g:vim_be_good_log_file = 1
 let g:vim_apm_log = 1
