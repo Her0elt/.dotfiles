@@ -1,8 +1,6 @@
-require("theprimeagen.telescope")
-require("theprimeagen.git-worktree")
-require("theprimeagen.harpoon")
-require("theprimeagen.lsp")
-require("theprimeagen.statusline")
+require("her0elt.lsp")
+require("her0elt.telescope")
+
 
 P = function(v)
   print(vim.inspect(v))
@@ -17,4 +15,3 @@ if pcall(require, 'plenary') then
     return require(name)
   end
 end
-
