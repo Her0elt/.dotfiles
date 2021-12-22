@@ -1,0 +1,8 @@
+[user]
+	email = hermann.owren.elton@hotmail.com
+	name = her0elt
+[alias]
+	ac = !git add . && git commit -am
+	amac = !git add . && git commit --amend --no-edit
+	upstream = !git push -u origin
+

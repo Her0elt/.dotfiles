@@ -14,18 +14,19 @@ set wildignore+=**/ios/*
 set wildignore+=**/.git/*
 
 call plug#begin('~/.vim/plugged')
+Plug 'lambdalisue/vim-django-support'
 
-" Yes, I am a sneaky snek now
 Plug 'ambv/black'
-
-" Plebvim lsp Plugins
 Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-compe'
-" Plug 'nvim-lua/completion-nvim'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
+" Plebvim lsp Plugins
 Plug 'glepnir/lspsaga.nvim'
 Plug 'simrat39/symbols-outline.nvim'
-" Plug 'tjdevries/nlua.nvim'
-" Plug 'tjdevries/lsp_extensions.nvim'
+Plug 'onsails/lspkind-nvim'
+Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -35,7 +36,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 Plug 'vim-conf-live/vimconflive2021-colorscheme'
 Plug 'flazz/vim-colorschemes'
 Plug 'chriskempson/base16-vim'
-
+Plug 'mfussenegger/nvim-jdtls'
 Plug 'rust-lang/rust.vim'
 Plug 'darrikonn/vim-gofmt'
 Plug 'tpope/vim-fugitive'
@@ -54,10 +55,26 @@ Plug 'ThePrimeagen/harpoon'
 
 call plug#end()
 let mapleader = " "
+highlight Normal guibg=None
+
 
 lua require("her0elt")
+
+if executable('rg')
+    let g:rg_derive_root='true'
+endif
+
 nnoremap <leader>pv :Ex<CR>
 nnoremap <leader>u :UndotreeShow<CR>
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nnoremap <leader>Y gg"+yG
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
 augroup highlight_yank
     autocmd!
