@@ -75,6 +75,8 @@ nnoremap <leader>d "_d
 vnoremap <leader>d "_d
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
+nnoremap <leader>x :silent !chmod +x %<CR>
+nnoremap <Leader><CR> :so ~/.config/nvim/init.vim<CR>
 
 augroup highlight_yank
     autocmd!
