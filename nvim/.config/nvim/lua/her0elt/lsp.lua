@@ -107,7 +107,7 @@ require("lspconfig").rust_analyzer.setup(config({
     --]]
 }))
 --require("lspconfig").ccls.setup()
---require("lspconfig").tsserver.setup(config())
+require("lspconfig").tsserver.setup(config())
 --require'lspconfig'.ccls.setup{}
 require('lspconfig').clangd.setup(config({
     cmd = { "clangd-12", "--background-index" },

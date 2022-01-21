@@ -22,7 +22,6 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
-" Plebvim lsp Plugins
 Plug 'glepnir/lspsaga.nvim'
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'onsails/lspkind-nvim'
@@ -33,20 +32,13 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
-Plug 'vim-conf-live/vimconflive2021-colorscheme'
-Plug 'flazz/vim-colorschemes'
-Plug 'chriskempson/base16-vim'
 Plug 'mfussenegger/nvim-jdtls'
 Plug 'rust-lang/rust.vim'
 Plug 'darrikonn/vim-gofmt'
-Plug 'tpope/vim-fugitive'
-Plug 'junegunn/gv.vim'
 Plug 'vim-utils/vim-man'
 Plug 'mbbill/undotree'
-Plug 'tpope/vim-dispatch'
 Plug 'theprimeagen/vim-be-good'
 Plug 'gruvbox-community/gruvbox'
-Plug 'tpope/vim-projectionist'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'mhinz/vim-rfc'
@@ -77,6 +69,9 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nnoremap <leader>x :silent !chmod +x %<CR>
 nnoremap <Leader><CR> :so ~/.config/nvim/init.vim<CR>
+nnoremap <Leader>+ :vertical resize +5<CR>
+nnoremap <Leader>- :vertical resize -5<CR>
+nnoremap <Leader>rp :resize 100<CR>
 
 augroup highlight_yank
     autocmd!

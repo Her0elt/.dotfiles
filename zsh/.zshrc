@@ -110,6 +110,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+source $HOME/.zsh_profile
 
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"

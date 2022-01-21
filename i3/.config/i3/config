@@ -48,8 +48,6 @@ floating_modifier $mod
 
 bindsym $mod+Return exec gnome-terminal
 
-# kill focused window
-# bindsym $mod+space exec "/home/theprimeagen/dotfiles/awesome-streamerrc/ThePrimeagen/tmux2"
 
 bindsym $mod+Shift+q kill
 bindsym $mod+Control+l exec i3lock  -i ~/Pictures/nice_try.jpg
@@ -176,8 +174,6 @@ bar {
 # ------------------------------------------
 exec --no-startup-id nm-applet
 
-bindsym $mod+Shift+s exec --no-startup-id ~/dotfiles/bin/monitor
-bindsym $mod+Shift+n exec --no-startup-id ~/dotfiles/bin/resolution
 
 # FKeys
 # Pulse Audio controls
