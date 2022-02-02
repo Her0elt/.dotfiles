@@ -33,6 +33,7 @@ Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
 Plug 'mfussenegger/nvim-jdtls'
+Plug 'folke/todo-comments.nvim'
 Plug 'rust-lang/rust.vim'
 Plug 'darrikonn/vim-gofmt'
 Plug 'vim-utils/vim-man'

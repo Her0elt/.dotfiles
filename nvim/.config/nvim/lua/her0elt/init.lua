@@ -1,7 +1,8 @@
 require("her0elt.lsp")
 require("her0elt.telescope")
+require("her0elt.todo")
 
-
+-- FIX: hello
 P = function(v)
   print(vim.inspect(v))
   return v
