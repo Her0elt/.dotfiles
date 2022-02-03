@@ -2,7 +2,9 @@
 	email = hermann.owren.elton@hotmail.com
 	name = her0elt
 [alias]
+    pf=!git push -f
+    p=!git push
+    currentgitbranch=!git symbolic-ref --short HEAD
 	ac = !git add . && git commit -am
 	amac = !git add . && git commit --amend --no-edit
-	upstream = !git push -u origin
-
+    upstream = !git push -u origin $(git currentgitbranch)
