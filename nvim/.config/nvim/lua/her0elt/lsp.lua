@@ -3,6 +3,10 @@ vim.lsp.set_log_level("debug")
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
+local lspkind = require("lspkind")
+require('lspkind').init({
+    mode = "symbol"
+})
 
 local tabnine = require('cmp_tabnine.config')
 tabnine:setup({
@@ -20,10 +24,6 @@ local source_mapping = {
 	cmp_tabnine = "[TN]",
 	path = "[Path]",
 }
-local lspkind = require("lspkind")
-require('lspkind').init({
-    with_text = true,
-})
 
 cmp.setup({
 	snippet = {
@@ -85,10 +85,6 @@ local function config(_config)
 	}, _config or {})
 end
 
-local lspkind = require("lspkind")
-require('lspkind').init({
-    with_text = true,
-})
 
 require('lspconfig').java_language_server.setup(config({
     cmd = {"~/java-language-server/dist/lang_server_linux.sh"}

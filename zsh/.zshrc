@@ -80,7 +80,6 @@ plugins=(
     colored-man-pages
     zsh-autosuggestions
     zsh-syntax-highlighting
-    zsh-z
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -114,3 +113,4 @@ source $HOME/.zsh_profile
 
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
+source /home/hermanoe/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
