@@ -15,7 +15,7 @@ set wildignore+=**/.git/*
 
 call plug#begin('~/.vim/plugged')
 Plug 'lambdalisue/vim-django-support'
-
+Plug 'ollykel/v-vim'
 Plug 'ambv/black'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -73,7 +73,8 @@ nnoremap <Leader><CR> :so ~/.config/nvim/init.vim<CR>
 nnoremap <Leader>+ :vertical resize +5<CR>
 nnoremap <Leader>- :vertical resize -5<CR>
 nnoremap <Leader>rp :resize 100<CR>
-
+vnoremap <leader>zc :s/^/#<CR>
+vnoremap <leader>zu :s/^#/<CR>
 augroup highlight_yank
     autocmd!
     autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 40})

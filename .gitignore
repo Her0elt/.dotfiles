@@ -1,0 +1,4 @@
+bin/**
+!tmux-cht
+!tmux-sessionizer
+!tmux-windowizer
