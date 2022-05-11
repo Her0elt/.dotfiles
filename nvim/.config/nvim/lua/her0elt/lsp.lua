@@ -109,6 +109,18 @@ require('lspconfig').clangd.setup(config({
     cmd = { "clangd-12", "--background-index" },
 }))
 require('lspconfig').jdtls.setup(config({ cmd = { 'jdtls' } }))
+require('lspconfig').gopls.setup(config({
+    cmd = { "gopls", "serve" },
+        settings = {
+            gopls = {
+                analyses = {
+                    unusedparams = true,
+                },
+                staticcheck = true,
+            },
+        },
+}))
+
 
 require('lspconfig').jedi_language_server.setup(config({}))
 --require('lspconfig').pyright.setup(config({}))
