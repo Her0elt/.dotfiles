@@ -4,3 +4,4 @@ bin/**
 !/bin/.local/bin/tmux-cht
 !/bin/.local/bin/tmux-sessionizer
 !/bin/.local/bin/tmux-windowizer
+!/bin/.local/bin/bbcli

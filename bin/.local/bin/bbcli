@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+selected=$(bb courses list | fzf)
+
+courseId=$(echo $selected | cut -d ' ' -f 1)
+
+content=$(bb contents list -c $courseId | fzf )
+
+contentId=$(echo $content | grep -o -E '\_([0-9]{7})\_([0-9]{1})')
+
+bb contents get -c $courseId -co $contentId
+
