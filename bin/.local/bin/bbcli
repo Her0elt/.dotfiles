@@ -1,12 +1,49 @@
 #!/usr/bin/env bash
 
-selected=$(bb courses list | fzf)
+idRegex="\_([0-9]{7})\_([0-9]{1})"
 
+options=("content" "announcements")
+
+echo "Pick your course"
+
+selected=$(bb courses list | fzf)
 courseId=$(echo $selected | cut -d ' ' -f 1)
 
-content=$(bb contents list -c $courseId | fzf )
+echo "Pick your action"
 
-contentId=$(echo $content | grep -o -E '\_([0-9]{7})\_([0-9]{1})')
+action=$(printf "%s\n" "${options[@]}" | fzf)
 
-bb contents get -c $courseId -co $contentId
+function content(){
+
+    content=$(bb contents list -c $courseId | fzf )
+
+    contentId=$(echo $content | grep -o -E $idRegex)
+
+    bb contents get -c $courseId -co $contentId
+}
+
+function announcement(){
+    bb announcements list -c $courseId
+}
+
+case $action in
+
+"content")
+    content
+     ;;
+"announcements")
+    announcement
+     ;;
+*)
+    echo "no input"
+    ;;
+esac
+
+
+
+
+
+
+
+
 
