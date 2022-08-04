@@ -14,6 +14,7 @@ set wildignore+=**/ios/*
 set wildignore+=**/.git/*
 
 call plug#begin('~/.vim/plugged')
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'lambdalisue/vim-django-support'
 Plug 'ollykel/v-vim'
 Plug 'ambv/black'
@@ -39,7 +40,7 @@ Plug 'darrikonn/vim-gofmt'
 Plug 'vim-utils/vim-man'
 Plug 'mbbill/undotree'
 Plug 'theprimeagen/vim-be-good'
-Plug 'gruvbox-community/gruvbox'
+Plug 'morhetz/gruvbox'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'mhinz/vim-rfc'
@@ -50,6 +51,10 @@ call plug#end()
 let mapleader = " "
 highlight Normal guibg=None
 
+
+let g:mkdp_auto_close = 0
+
+nnoremap <leader>pre :MarkdownPreview<CR>
 
 lua require("her0elt")
 

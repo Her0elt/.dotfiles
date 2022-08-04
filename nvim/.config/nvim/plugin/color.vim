@@ -6,12 +6,12 @@ fun! ColorMyPencils()
         let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     endif
     let g:gruvbox_invert_selection='0'
-
+    let g:gruvbox_italic=1
+    let g:gruvbox_termcolors=16
     set background=dark
     if has('nvim')
         call luaeval('vim.cmd("colorscheme " .. _A[1])', [g:her0elt_colorscheme])
     else
-        " TODO: What the way to use g:theprimeagen_colorscheme
         colorscheme gruvbox
     endif
 

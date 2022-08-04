@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/hermanoe/.oh-my-zsh"
+export ZSH="/Users/hermann/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -111,21 +111,16 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source $HOME/.zsh_profile
 
-export GOPATH="$HOME/go_projects"
-export cargo="$HOME/.cargo/env"
-source /home/hermanoe/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# Add JBang to environment
-alias j!=jbang
-export PATH="$HOME/.jbang/bin:$PATH"
-
-# add Pulumi to the PATH
-export PATH=$PATH:$HOME/.pulumi/bin
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/hermanoe/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/hermanoe/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/completion.zsh.inc'; fi
-
+export CLICOLOR=1
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+
+
+# bun completions
+[ -s "/Users/hermann/.bun/_bun" ] && source "/Users/hermann/.bun/_bun"
+
+# Bun
+export BUN_INSTALL="/Users/hermann/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
