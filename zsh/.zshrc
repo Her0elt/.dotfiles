@@ -114,6 +114,7 @@ source $HOME/.zsh_profile
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
 source /home/hermanoe/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export OZHOME="/usr/"
 
 # Add JBang to environment
 alias j!=jbang
@@ -121,6 +122,8 @@ export PATH="$HOME/.jbang/bin:$PATH"
 
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/hermanoe/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/path.zsh.inc'; fi
@@ -129,3 +132,6 @@ if [ -f '/home/hermanoe/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermanoe
 if [ -f '/home/hermanoe/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/completion.zsh.inc'; fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH=$PATH:$JAVA_HOME/bin
+export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
+

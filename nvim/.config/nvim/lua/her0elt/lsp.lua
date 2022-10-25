@@ -42,6 +42,10 @@ cmp.setup({
 		["<C-u>"] = cmp.mapping.scroll_docs(-4),
 		["<C-d>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
+        ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item()),
+        ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item()),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+
 	},
 
     formatting = {
@@ -91,8 +95,7 @@ require('lspconfig').java_language_server.setup(config({
 
 }))
 require("lspconfig").rust_analyzer.setup(config({
-    cmd = { "rustup", "run", "nightly", "rust-analyzer"},
-    --[[
+    cmd = { "rust-analyzer"},
     settings = {
         rust = {
             unstable_features = true,
@@ -100,7 +103,6 @@ require("lspconfig").rust_analyzer.setup(config({
             all_features = true,
         },
     }
-    --]]
 }))
 --require("lspconfig").ccls.setup()
 require("lspconfig").tsserver.setup(config())
@@ -123,4 +125,5 @@ require('lspconfig').gopls.setup(config({
 
 
 require('lspconfig').jedi_language_server.setup(config({}))
+require('lspconfig').elmls.setup(config({}))
 --require('lspconfig').pyright.setup(config({}))

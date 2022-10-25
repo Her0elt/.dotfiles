@@ -14,7 +14,10 @@ set wildignore+=**/ios/*
 set wildignore+=**/.git/*
 
 call plug#begin('~/.vim/plugged')
-Plug 'lambdalisue/vim-django-support'
+
+Plug 'Procrat/oz.vim'
+
+
 Plug 'ollykel/v-vim'
 Plug 'ambv/black'
 Plug 'neovim/nvim-lspconfig'
@@ -25,9 +28,9 @@ Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 Plug 'glepnir/lspsaga.nvim'
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'onsails/lspkind-nvim'
-Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
@@ -75,6 +78,7 @@ nnoremap <Leader>- :vertical resize -5<CR>
 nnoremap <Leader>rp :resize 100<CR>
 vnoremap <leader>zc :s/^/#<CR>
 vnoremap <leader>zu :s/^#/<CR>
+
 augroup highlight_yank
     autocmd!
     autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 40})
