@@ -1,18 +1,26 @@
-require("her0elt.lsp")
-require("her0elt.telescope")
-require("her0elt.todo")
+local M = {}
 
--- FIX: hello
-P = function(v)
-  print(vim.inspect(v))
-  return v
+local function init()
+	-- Enable provider for only python3 and node
+	vim.g.python3_host_prog = vim.fn.exepath("python3")
+	vim.g.loaded_python_provider = 0
+	vim.g.loaded_perl_provider = 0
+	vim.g.loaded_ruby_provider = 0
+
+	vim.g.github_enterprise_urls = { "https://github.prod.hulu.com" }
+	vim.g["test#strategy"] = "neovim"
+	vim.g["test#neovim#term_position"] = "vertical"
+	vim.g["test#javascript#jest#options"] = "--watch"
 end
 
-if pcall(require, 'plenary') then
-  RELOAD = require('plenary.reload').reload_module
+function M.setup()
+	init()
 
-  R = function(name)
-    RELOAD(name)
-    return require(name)
-  end
+	require("her0elt.autocmds")
+	require("her0elt.keymaps")
+	require("her0elt.options")
+	require("her0elt.plugins")
+	require("her0elt.colorscheme")
 end
+
+return M

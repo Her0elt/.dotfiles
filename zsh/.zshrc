@@ -134,4 +134,5 @@ if [ -f '/home/hermanoe/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/he
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=$PATH:$JAVA_HOME/bin
 export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
+export PATH="$PATH:$HOME/kotlin-language-server/server/build/install/server/bin/kotlin-language-server"
 
