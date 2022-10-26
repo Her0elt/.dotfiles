@@ -10,4 +10,6 @@
     upstream = !git push -u origin $(git currentgitbranch)
     cleanup=!delete-branches
 [core]
-	editor = nano
+	editor = nvim
+[url "ssh://git@github.com/"]
+  insteadOf = https://github.com/
