@@ -9,5 +9,5 @@
 	amac = !git add . && git commit --amend --no-edit
     upstream = !git push -u origin $(git currentgitbranch)
     cleanup=!delete-branches
-[url "ssh://git@github.com/"]
-	insteadOf = https://github.com/
+[core]
+	editor = nano
