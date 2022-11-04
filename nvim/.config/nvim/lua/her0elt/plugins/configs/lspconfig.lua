@@ -8,13 +8,23 @@ vim.diagnostic.config({
 })
 
 local function on_attach(client, bufnr)
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition [LSP]", buffer = bufnr })
-	vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, { desc = "Go to type definition", buffer = bufnr })
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration [LSP]", buffer = bufnr })
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implentation [LSP]", buffer = bufnr })
-	vim.keymap.set("n", "gw", vim.lsp.buf.document_symbol, { desc = "Search document symbols [LSP]", buffer = bufnr })
-	vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, { desc = "Search workspace symbols [LSP]", buffer = bufnr })
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references [LSP]", buffer = bufnr })
+	vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, { desc = "Go to definition [LSP]", buffer = bufnr })
+	vim.keymap.set("n", "<leader>gt", vim.lsp.buf.type_definition, { desc = "Go to type definition", buffer = bufnr })
+	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, { desc = "Go to declaration [LSP]", buffer = bufnr })
+	vim.keymap.set("n", "<leader>gi", vim.lsp.buf.implementation, { desc = "Go to implentation [LSP]", buffer = bufnr })
+	vim.keymap.set(
+		"n",
+		"<leader>gw",
+		vim.lsp.buf.document_symbol,
+		{ desc = "Search document symbols [LSP]", buffer = bufnr }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>gW",
+		vim.lsp.buf.workspace_symbol,
+		{ desc = "Search workspace symbols [LSP]", buffer = bufnr }
+	)
+	vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, { desc = "Show references [LSP]", buffer = bufnr })
 	vim.keymap.set("n", "<c-k>", vim.lsp.buf.signature_help, { desc = "Show signature help [LSP]", buffer = bufnr })
 
 	-- LSP Saga keymaps

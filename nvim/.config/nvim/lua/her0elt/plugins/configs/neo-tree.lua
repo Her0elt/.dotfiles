@@ -17,6 +17,6 @@ require("neo-tree").setup({
 	},
 })
 
-vim.keymap.set("n", "<Leader>tt", "<Cmd>Neotree reveal toggle<CR>", { desc = "Toggle file tree" })
-vim.keymap.set("n", "<Leader>tc", "<Cmd>Neotree action=close source=filesystem<CR>", { desc = "Close file tree" })
-vim.keymap.set("n", "<Leader>tf", "<Cmd>Neotree reveal action=focus<CR>", { desc = "Focus file tree" })
+vim.keymap.set("n", "<Leader>vv", "<Cmd>Neotree reveal toggle<CR>", { desc = "Toggle file tree" })
+vim.keymap.set("n", "<Leader>pc", "<Cmd>Neotree action=close source=filesystem<CR>", { desc = "Close file tree" })
+vim.keymap.set("n", "<Leader>pv", "<Cmd>Neotree reveal action=focus<CR>", { desc = "Focus file tree" })

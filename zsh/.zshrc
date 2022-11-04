@@ -79,6 +79,7 @@ plugins=(
     history-substring-search
     colored-man-pages
     zsh-autosuggestions
+    zsh-vi-mode
     zsh-syntax-highlighting
 )
 
@@ -113,7 +114,8 @@ source $HOME/.zsh_profile
 
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
-source /home/hermanoe/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $HOME/.zsh-vi-mode/zsh-vi-mode.plugin.zsh
 export OZHOME="/usr/"
 
 # Add JBang to environment

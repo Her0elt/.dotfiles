@@ -25,7 +25,7 @@ local yank_group = vim.api.nvim_create_augroup("YankGroup", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = yank_group,
 	callback = function()
-		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 250 })
+		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 50 })
 	end,
 	desc = "Briefly highlight code on yank",
 })
