@@ -1,4 +1,4 @@
-vim.g.her0elt_colorscheme = "tokyonight"
+vim.g.her0elt_colorscheme = "gruvbox"
 
 require("catppuccin").setup({
 	transparent_background = false,

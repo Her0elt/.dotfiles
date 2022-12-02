@@ -25,6 +25,7 @@ return require("packer").startup(function(use)
 
 
     use("folke/tokyonight.nvim")
+    use("gruvbox-community/gruvbox")
     use({"catppuccin/nvim", as = "catppuccin" })
     use({ 'rose-pine/neovim', as = 'rose-pine' })
 
