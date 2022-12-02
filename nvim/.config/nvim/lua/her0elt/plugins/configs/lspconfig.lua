@@ -119,6 +119,7 @@ lspconfig.clangd.setup(default_config)
 lspconfig.kotlin_language_server.setup(default_config)
 lspconfig.rust_analyzer.setup(default_config)
 lspconfig.elmls.setup(default_config)
+lspconfig.sumneko_lua.setup(default_config)
 
 -- Tailwind CSS
 local tw_highlight = require("tailwind-highlight")

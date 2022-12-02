@@ -21,21 +21,13 @@ local user_plugins = {
 			vim.keymap.set("n", "<Leader>u", "<Cmd>UndotreeToggle<CR>", { desc = "Open undo tree" })
 		end,
 	},
-
-	-- File explorer
+	-- Harpoon
 	{
-		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v2.x",
-		requires = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-			"MunifTanjim/nui.nvim",
-		},
+		"ThePrimeagen/harpoon",
 		config = function()
-			require("her0elt.plugins.configs.neo-tree")
+			require("her0elt.plugins.configs.harpoon")
 		end,
 	},
-
 	-- Telescope
 	{
 		"nvim-lua/telescope.nvim",
@@ -111,13 +103,6 @@ local user_plugins = {
 	-- Theme/Syntax
 	{ "catppuccin/nvim", as = "catppuccin" },
 	"gruvbox-community/gruvbox",
-	{
-		"akinsho/bufferline.nvim",
-		requires = "nvim-tree/nvim-web-devicons",
-		config = function()
-			require("her0elt.plugins.configs.bufferline")
-		end,
-	},
 	{
 		"nvim-lualine/lualine.nvim",
 		requires = "nvim-tree/nvim-web-devicons",

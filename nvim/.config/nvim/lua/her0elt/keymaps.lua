@@ -24,3 +24,11 @@ vim.keymap.set("n", "<S-Tab>", "<Cmd>bprevious<CR>", { desc = "Go to previous bu
 vim.keymap.set("n", "<Esc>", "<Cmd>noh<Return><Esc>", { desc = "Go to normal mode, clear any highlights" })
 
 vim.keymap.set("n", "<Leader>z", require("her0elt.utils").reload_config, { desc = "Reload vim config" })
+vim.keymap.set("n", "<Leader>pv", "<Cmd>Ex<CR>", { desc = "open file tree" })
+vim.keymap.set("n", "<Leader>y", '"+y', {})
+vim.keymap.set("v", "<Leader>y", '"+y', {})
+vim.keymap.set("n", "<Leader>Y", '"+Y', {})
+vim.keymap.set("v", "K", "<Cmd>m '<-2<CR>gv=gv", {})
+vim.keymap.set("v", "J", "<Cmd>m '>+1<CR>gv=gv", {})
+vim.keymap.set("n", "<C-u>", "<C-u>zz", {})
+vim.keymap.set("n", "<C-d>", "<C-d>zz", {})
