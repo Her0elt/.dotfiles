@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+
+selected=$(ls ~/.dotfiles/background/ | fzf)
+
+nitrogen --set-auto ~/.dotfiles/background/$selected
