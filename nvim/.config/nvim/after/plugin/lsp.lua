@@ -4,6 +4,13 @@ local inoremap = Remap.inoremap
 
 local sumneko_root_path = "/home/mpaulson/personal/sumneko"
 local sumneko_binary = sumneko_root_path .. "/bin/lua-language-server"
+require('lsp_extensions').inlay_hints{
+	highlight = "Comment",
+	prefix = " > ",
+	aligned = false,
+	only_current_line = false,
+	enabled = { "ChainingHint" }
+}
 
 -- Setup nvim-cmp.
 local cmp = require("cmp")

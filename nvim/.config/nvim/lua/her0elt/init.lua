@@ -1,5 +1,6 @@
 require("her0elt.packer")
 require("her0elt.remaps")
+require("her0elt.fugitive")
 require("her0elt.set")
 
 local augroup = vim.api.nvim_create_augroup
