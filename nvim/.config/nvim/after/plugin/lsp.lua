@@ -15,7 +15,6 @@ require('lsp_extensions').inlay_hints{
 -- Setup nvim-cmp.
 local cmp = require("cmp")
 local source_mapping = {
-	youtube = "[Suck it YT]",
 	buffer = "[Buffer]",
 	nvim_lsp = "[LSP]",
 	nvim_lua = "[Lua]",
