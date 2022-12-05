@@ -2,7 +2,7 @@ local Remap = require("her0elt.keymap")
 local nnoremap = Remap.nnoremap
 local inoremap = Remap.inoremap
 
-local sumneko_root_path = "/home/mpaulson/personal/sumneko"
+local sumneko_root_path = "/home/her0elt/sumneko"
 local sumneko_binary = sumneko_root_path .. "/bin/lua-language-server"
 require('lsp_extensions').inlay_hints{
 	highlight = "Comment",

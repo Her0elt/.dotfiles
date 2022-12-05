@@ -11,6 +11,8 @@ vnoremap("K", ":m '<-2<CR>gv=gv")
 
 nnoremap("Y", "yg$")
 nnoremap("J", "mzJ`z")
+nnoremap("<C-d>", "<C-d>zz")
+nnoremap("<C-u>", "<C-u>zz")
 vnoremap("<leader>y", "\"+y")
 nnoremap("<leader>Y",  "\"+yg_")
 nnoremap("<leader>y",  "\"+y")
