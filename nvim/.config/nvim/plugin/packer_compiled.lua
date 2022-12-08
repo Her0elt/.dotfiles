@@ -124,6 +124,11 @@ _G.packer_plugins = {
     path = "/home/hermanoe/.local/share/nvim/site/pack/packer/start/harpoon",
     url = "https://github.com/theprimeagen/harpoon"
   },
+  ["kotlin-vim"] = {
+    loaded = true,
+    path = "/home/hermanoe/.local/share/nvim/site/pack/packer/start/kotlin-vim",
+    url = "https://github.com/udalov/kotlin-vim"
+  },
   ["lsp-zero.nvim"] = {
     loaded = true,
     path = "/home/hermanoe/.local/share/nvim/site/pack/packer/start/lsp-zero.nvim",
