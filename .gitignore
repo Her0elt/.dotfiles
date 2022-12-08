@@ -7,3 +7,4 @@ bin/**
 !/bin/.local/bin/bbcli
 !/bin/.local/bin/delete-branches
 !/bin/.local/bin/pr-checkout
+!/bin/.local/bin/new-bg

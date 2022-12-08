@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/hermanoe/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -79,6 +79,7 @@ plugins=(
     history-substring-search
     colored-man-pages
     zsh-autosuggestions
+    zsh-vi-mode
     zsh-syntax-highlighting
 )
 
@@ -113,7 +114,6 @@ source $HOME/.zsh_profile
 
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
-source /home/hermanoe/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export OZHOME="/usr/"
 
 # Add JBang to environment
@@ -134,4 +134,5 @@ if [ -f '/home/hermanoe/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/he
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=$PATH:$JAVA_HOME/bin
 export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
+export PATH="$PATH:$HOME/kotlin-language-server/server/build/install/server/bin/kotlin-language-server"
 
