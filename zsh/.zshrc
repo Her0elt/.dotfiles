@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/hermanoe/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -76,11 +76,7 @@ export FZF_DEFAULT_OPTS="--layout=reverse --inline-info --height=80%"
 plugins=(
     fzf
     git
-    history-substring-search
-    colored-man-pages
     zsh-autosuggestions
-    zsh-vi-mode
-    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -114,8 +110,6 @@ source $HOME/.zsh_profile
 
 export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
-source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $HOME/.zsh-vi-mode/zsh-vi-mode.plugin.zsh
 export OZHOME="/usr/"
 
 # Add JBang to environment
@@ -124,7 +118,7 @@ export PATH="$HOME/.jbang/bin:$PATH"
 
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 
 # The next line updates PATH for the Google Cloud SDK.
