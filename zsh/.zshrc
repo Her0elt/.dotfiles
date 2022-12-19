@@ -76,11 +76,7 @@ export FZF_DEFAULT_OPTS="--layout=reverse --inline-info --height=80%"
 plugins=(
     fzf
     git
-    history-substring-search
-    colored-man-pages
     zsh-autosuggestions
-    zsh-vi-mode
-    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -122,7 +118,7 @@ export PATH="$HOME/.jbang/bin:$PATH"
 
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 
 # The next line updates PATH for the Google Cloud SDK.
