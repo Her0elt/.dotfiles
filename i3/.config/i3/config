@@ -14,11 +14,12 @@
 set $mod Mod4
 
 
-exec_always --no-startup-id "sh /home/hermanoe/.config/i3/scripts/setup-script.sh"
+exec_always --no-startup-id "sh ~/.dotfiles/i3/.config/i3/scripts/setup-script.sh"
+
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nitrogen --set-auto ~/.dotfiles/background/background.jpg
 exec_always --no-startup-id compton
-
+exec_always --no-startup-id "sh ~/.dotfiles/i3/.config/i3/scripts/setup-script.sh"
 
 exec shutter --min_at_startup
 # Font for window titles. Will also be used by the bar unless a different font

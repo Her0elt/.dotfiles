@@ -1,19 +1,6 @@
-local ok, telescope = pcall(require, "telescope")
-local nnoremap = require("her0elt.keymap").nnoremap
-
-if not ok then
-    return
-end
-
-telescope.setup()
-require('telescope').load_extension('fzf')
-
-
-nnoremap("<C-p>", function()
-    require('telescope.builtin').git_files()
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
+vim.keymap.set('n', '<C-p>', builtin.git_files, {})
+vim.keymap.set('n', '<leader>ps', function()
+	builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end)
-
-nnoremap("<leader>pf", function()
-    require('telescope.builtin').find_files()
-end)
-
