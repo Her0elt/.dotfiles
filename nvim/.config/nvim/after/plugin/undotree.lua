@@ -1,6 +1,3 @@
-local nnoremap = require("her0elt.keymap").nnoremap
-
-
-nnoremap("<leader>u", function() vim.cmd.UndotreeToggle()  end)
+vim.keymap.set("n", "<leader>u", function() vim.cmd.UndotreeToggle()  end)
 
 
