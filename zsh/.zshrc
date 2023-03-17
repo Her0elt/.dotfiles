@@ -121,14 +121,14 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/hermanoe/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/hermanoe/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermanoe/google-cloud-sdk/completion.zsh.inc'; fi
-
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=$PATH:$JAVA_HOME/bin
 export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
 export PATH="$PATH:$HOME/kotlin-language-server/server/build/install/server/bin/kotlin-language-server"
 
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/hermann/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermann/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/hermann/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermann/google-cloud-sdk/completion.zsh.inc'; fi

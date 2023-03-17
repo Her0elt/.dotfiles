@@ -12,6 +12,12 @@ return require("packer").startup(function(use)
         run = ":TSUpdate"
     })
     use({ 'mbbill/undotree' })
+    use ({
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    })
 
 
     use ({
