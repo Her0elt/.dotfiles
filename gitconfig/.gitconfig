@@ -5,8 +5,9 @@
     pf=!git push -f
     p=!git push
     currentgitbranch=!git symbolic-ref --short HEAD
-	ac = !git add . && git commit -am
-	amac = !git add . && git commit --amend --no-edit
+	ac = !git add -A && git commit -am
+	amac = !git add -A && git commit --amend --no-edit
     upstream = !git push -u origin $(git currentgitbranch)
     cleanup=!delete-branches
+
 
