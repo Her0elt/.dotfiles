@@ -11,7 +11,7 @@ xrandr --listmonitors | sed -n '1!p' | sed -e 's/\s[0-9].*\s\([a-zA-Z0-9\-]*\)$/
 xmodmap -e "clear lock" #disable caps lock switch
 xmodmap -e "keysym Caps_Lock = Escape" #set caps_lock as escape
 xrandr --output HDMI-1 --mode 1920x1080
-xrandr --output eDP-1 --auto
+xrandr --output DP-3 --mode 3440x1440
 feh --bg-scale .dotfiles/background/background.jpg
 
 
