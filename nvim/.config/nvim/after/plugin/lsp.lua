@@ -20,7 +20,6 @@ lsp.configure('sumneko_lua', {
     }
 })
 
-
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
 local cmp_mappings = lsp.defaults.cmp_mappings({
@@ -68,3 +67,12 @@ lsp.setup()
 vim.diagnostic.config({
     virtual_text = true,
 })
+
+
+require('lspconfig').clangd.setup{
+    capabilities = lsp.capabilities,
+    on_attach = function (client, bufnr)
+        client.server_capabilities.signatureHelpProvider = false
+        lsp.on_attach(client, bufnr)
+    end
+}
