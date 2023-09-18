@@ -131,6 +131,14 @@ return {
       },
     },
   },
+  {
+    "mason-nvim-dap.nvim",
+    opts = {
+      ensure_installed = {
+        "codelldb",
+      },
+    },
+  },
 
   -- for typescript, LazyVim also includes extra specs to properly setup lspconfig,
   -- treesitter, mason and typescript.nvim. So instead of the above, you can use:
@@ -154,6 +162,7 @@ return {
         "tsx",
         "typescript",
         "vim",
+        "cpp",
         "yaml",
       },
     },
@@ -171,6 +180,25 @@ return {
         "typescript",
       })
     end,
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    opts = {
+      filesystem = {
+        filtered_items = {
+          visible = true,
+          show_hidden_count = true,
+          hide_dotfiles = false,
+          hide_gitignored = true,
+          hide_by_name = {
+            -- '.git',
+            -- '.DS_Store',
+            -- 'thumbs.db',
+          },
+          never_show = {},
+        },
+      },
+    },
   },
 
   -- the opts function can also be used to change the default opts:
