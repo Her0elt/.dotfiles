@@ -12,4 +12,5 @@ xmodmap -e "clear lock"                #disable caps lock switch
 xmodmap -e "keysym Caps_Lock = Escape" #set caps_lock as escape
 xrandr --output HDMI-1 --mode 1920x1080
 xrandr --output DP-3 --mode 3440x1440
+xrandr --output eDP-1 --auto
 feh --bg-scale .dotfiles/background/background.jpg
