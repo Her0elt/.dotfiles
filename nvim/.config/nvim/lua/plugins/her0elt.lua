@@ -55,9 +55,12 @@ return {
     keys = {
       -- add a keymap to browse plugin files
       -- stylua: ignore
+
       {
         "<leader>fp",
-        function() require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root }) end,
+        function()
+          require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root })
+        end,
         desc = "Find Plugin File",
       },
     },
@@ -176,29 +179,9 @@ return {
     opts = function(_, opts)
       -- add tsx and treesitter
       vim.list_extend(opts.ensure_installed, {
-        "tsx",
-        "typescript",
+        "all",
       })
     end,
-  },
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    opts = {
-      filesystem = {
-        filtered_items = {
-          visible = true,
-          show_hidden_count = true,
-          hide_dotfiles = false,
-          hide_gitignored = true,
-          hide_by_name = {
-            -- '.git',
-            -- '.DS_Store',
-            -- 'thumbs.db',
-          },
-          never_show = {},
-        },
-      },
-    },
   },
 
   -- the opts function can also be used to change the default opts:
@@ -228,17 +211,6 @@ return {
   { import = "lazyvim.plugins.extras.lang.json" },
 
   -- add any tools you want to have installed below
-  {
-    "williamboman/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "stylua",
-        "shellcheck",
-        "shfmt",
-        "flake8",
-      },
-    },
-  },
 
   -- Use <tab> for completion and snippets (supertab)
   -- first: disable default <tab> and <s-tab> behavior in LuaSnip
