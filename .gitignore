@@ -8,5 +8,6 @@ bin/**
 !/bin/.local/bin/delete-branches
 !/bin/.local/bin/pr-checkout
 !/bin/.local/bin/new-bg
+!/bin/.local/bin/tmux-cli
 
 nvim/.config/nvim/plugin/packer_compiled.lua

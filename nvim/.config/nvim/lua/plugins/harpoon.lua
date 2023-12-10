@@ -1,0 +1,47 @@
+return {
+  {
+    "nvim-lua/plenary.nvim",
+  },
+  {
+
+    "ThePrimeagen/harpoon",
+    keys = {
+      {
+        "<leader>a",
+        function()
+          require("harpoon.mark").add_file()
+        end,
+      },
+      {
+        "<C-e>",
+        function()
+          require("harpoon.ui").toggle_quick_menu()
+        end,
+      },
+      {
+        "<C-a>",
+        function()
+          require("harpoon.ui").nav_file(1)
+        end,
+      },
+      {
+        "<C-s>",
+        function()
+          require("harpoon.ui").nav_file(2)
+        end,
+      },
+      {
+        "<C-n>",
+        function()
+          require("harpoon.ui").nav_file(3)
+        end,
+      },
+      {
+        "<C-m>",
+        function()
+          require("harpoon.ui").nav_file(4)
+        end,
+      },
+    },
+  },
+}
