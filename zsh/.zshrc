@@ -11,7 +11,7 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 export FZF_DEFAULT_COMMAND='fdfind --type f'
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info --height=80%"
-export FZF_BASE="$HOME/fzf/bin/fzf"
+export FZF_BASE="$HOME/fzf/"
 
 
 # Set list of themes to pick from when loading at random
