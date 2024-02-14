@@ -146,3 +146,7 @@ export WASMTIME_HOME="$HOME/.wasmtime"
 export PATH="$WASMTIME_HOME/bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+[ -f "/home/hermann/.ghcup/env" ] && source "/home/hermann/.ghcup/env" # ghcup-enveval "$(/bin/brew shellenv)"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
