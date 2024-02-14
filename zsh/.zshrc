@@ -9,10 +9,11 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
-
-
 export FZF_DEFAULT_COMMAND='fdfind --type f'
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info --height=80%"
+export FZF_BASE="$HOME/fzf/"
+
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -117,7 +118,7 @@ export PATH="$HOME/.jbang/bin:$PATH"
 
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 
@@ -132,3 +133,20 @@ if [ -f '/home/hermann/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermann/g
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/hermann/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermann/google-cloud-sdk/completion.zsh.inc'; fi
+
+# bun completions
+[ -s "/home/hermann/.bun/_bun" ] && source "/home/hermann/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+export WASMTIME_HOME="$HOME/.wasmtime"
+
+export PATH="$WASMTIME_HOME/bin:$PATH"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+[ -f "/home/hermann/.ghcup/env" ] && source "/home/hermann/.ghcup/env" # ghcup-enveval "$(/bin/brew shellenv)"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
