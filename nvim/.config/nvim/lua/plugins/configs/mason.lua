@@ -1,5 +1,36 @@
 local options = {
-  ensure_installed = { "lua-language-server" }, -- not an option from mason.nvim
+  ensure_installed = {
+    "lua-language-server",
+    "stylua",
+    "shellcheck",
+    "shfmt",
+    "flake8",
+    "black",
+    "isort",
+    "astro-language-server",
+    "clangd",
+    "codelldb",
+    "cpptools",
+    "css-lsp",
+    "cssmodules-language-server",
+    "eslint-lsp",
+    "java-debug-adapter",
+    "java-test",
+    "jdtls",
+    "js-debug-adapter",
+    "json-lsp",
+    "lua-language-server",
+    "prettierd",
+    "prisma-language-server",
+    "pyright",
+    "rust-analyzer",
+    "shfmt",
+    "stylua",
+    "taplo",
+    "typescript-language-server",
+    "tailwindcss-language-server",
+    "zls",
+  }, -- not an option from mason.nvim
 
   PATH = "skip",
 
