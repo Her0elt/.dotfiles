@@ -150,3 +150,11 @@ export PATH="$WASMTIME_HOME/bin:$PATH"
 [ -f "/home/hermann/.ghcup/env" ] && source "/home/hermann/.ghcup/env" # ghcup-enveval "$(/bin/brew shellenv)"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# pnpm
+export PNPM_HOME="/home/hermann/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
