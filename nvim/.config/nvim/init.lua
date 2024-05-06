@@ -123,6 +123,10 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<Up>', '<cmd>resize -2<CR>', {})
+vim.keymap.set('n', '<Down>', '<cmd>resize +2<CR>', {})
+vim.keymap.set('n', '<Left>', '<cmd>vertical resize -2<CR>', {})
+vim.keymap.set('n', '<Right>', '<cmd>vertical resize +2<CR>', {})
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -338,7 +342,6 @@ require('lazy').setup {
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -475,9 +478,9 @@ require('lazy').setup {
         tsserver = {},
         astro = {},
         clangd = {},
-        jdtls = {},
         jedi_language_server = {},
         cssmodules_ls = {},
+        jdtls = {},
         cssls = {},
         prismals = {},
         rust_analyzer = {},
@@ -485,8 +488,10 @@ require('lazy').setup {
         tailwindcss = {},
         zls = {},
         docker_compose_language_service = {},
+        svelte = {},
         dockerls = {},
         dotls = {},
+        gopls = {},
         html = {},
         kotlin_language_server = {},
         gleam = {},
@@ -549,6 +554,7 @@ require('lazy').setup {
         'css-lsp',
         'cssmodules-language-server',
         'detekt',
+        'svelte-language-server',
         'docker-compose-language-service',
         'dockerfile-language-server',
         'dot-language-server',
@@ -556,9 +562,11 @@ require('lazy').setup {
         'eslint',
         'flake8',
         'html-lsp',
+        'kotlin-language-server',
         'isort',
         'jedi-language-server',
         'kotlin-debug-adapter',
+        'jdtls',
         'kotlin-language-server',
         'ktlint',
         'eslint',
@@ -571,6 +579,7 @@ require('lazy').setup {
         'tailwindcss-language-server',
         'typescript-language-server',
         'rustywind',
+        'gopls',
         'gleam',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -731,18 +740,34 @@ require('lazy').setup {
   --     vim.cmd.colorscheme 'tokyonight'
   --   end,
   -- },
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
-    'rose-pine/neovim',
-    lazy = false, -- make sure we load this during startup if it is your main colorscheme
-    priority = 1000, -- make sure to load this before all the other start plugins
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
+  --   'rose-pine/neovim',
+  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     -- Load the colorscheme here
+  --     require('rose-pine').setup {}
+  --     vim.cmd.colorscheme 'rose-pine'
+  --   end,
+  -- },
+  {
+    'scottmckendry/cyberdream.nvim',
+    lazy = false,
+    priority = 1000,
     config = function()
-      -- Load the colorscheme here
-      require('rose-pine').setup {}
-      vim.cmd.colorscheme 'rose-pine'
+      require('cyberdream').setup {
+        -- Recommended - see "Configuring" below for more config options
+        transparent = true,
+        italic_comments = true,
+        hide_fillchars = true,
+        borderless_telescope = false,
+        terminal_colors = true,
+      }
+      vim.cmd 'colorscheme cyberdream' -- set the colorscheme
     end,
   },
 

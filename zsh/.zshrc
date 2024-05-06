@@ -112,6 +112,7 @@ export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
 export OZHOME="/usr/"
 
+
 # Add JBang to environment
 alias j!=jbang
 export PATH="$HOME/.jbang/bin:$PATH"
@@ -158,3 +159,5 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+fpath+=${ZDOTDIR:-~}/.zsh_functions
+fpath+=${ZDOTDIR:-~}/.zsh_functions
