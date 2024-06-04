@@ -494,7 +494,6 @@ require('lazy').setup {
         gopls = {},
         html = {},
         kotlin_language_server = {},
-        gleam = {},
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -571,6 +570,7 @@ require('lazy').setup {
         'ktlint',
         'eslint',
         'lua-language-server',
+        'zls',
         'prettier',
         'prettierd',
         'rust-analyzer',
@@ -580,7 +580,6 @@ require('lazy').setup {
         'typescript-language-server',
         'rustywind',
         'gopls',
-        'gleam',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -887,7 +886,13 @@ require('lazy').setup {
       },
     },
     cmd = { 'NvimTreeToggle', 'NvimTreeFocus' },
-    opts = {},
+    opts = {
+      update_focused_file = {
+        enable = true,
+        update_root = false,
+        ignore_list = {},
+      },
+    },
     keys = {
       { '<leader>e', '<cmd>NvimTreeToggle<CR>' },
     },
@@ -914,6 +919,24 @@ require('lazy').setup {
     opts = {},
   },
   'ThePrimeagen/vim-be-good',
+  {
+    'arminveres/md-pdf.nvim',
+    branch = 'main', -- you can assume that main is somewhat stable until releases will be made
+    lazy = true,
+    config = function()
+      require('md-pdf').setup()
+    end,
+    keys = {
+      {
+        '<leader>md',
+        function()
+          require('md-pdf').convert_md_to_pdf()
+        end,
+        desc = 'Markdown preview',
+      },
+    },
+    opts = {},
+  },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
