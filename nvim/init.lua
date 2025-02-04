@@ -8,6 +8,7 @@ vim.g.maplocalleader = ' '
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
+vim.opt.laststatus = 0
 
 -- Make line numbers default
 vim.opt.number = true
@@ -79,6 +80,7 @@ vim.opt.undofile = true
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set({ 'n', 'v', 'i' }, '<C-c>', '<Esc>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -475,7 +477,14 @@ require('lazy').setup {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        tsserver = {},
+        tsserver = {
+          init_options = {
+            preferences = {
+              importModuleSpecifierPreference = 'non-relative',
+              importModuleSpecifierEnding = 'minimal',
+            },
+          },
+        },
         astro = {},
         clangd = {},
         jedi_language_server = {},
@@ -543,6 +552,9 @@ require('lazy').setup {
       --  You can press `g?` for help in this menu
       require('mason').setup()
 
+      -- Gleam setup
+      require('lspconfig').gleam.setup {}
+
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
@@ -580,6 +592,7 @@ require('lazy').setup {
         'typescript-language-server',
         'rustywind',
         'gopls',
+        'csharpier',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -615,6 +628,8 @@ require('lazy').setup {
         typescriptreact = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
         javascript = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
         javascriptreact = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
+        cs = { 'csharpier' },
+
         cpp = { 'clang_format' },
 
         -- Use the "_" filetype to run formatters on filetypes that don't
@@ -709,6 +724,7 @@ require('lazy').setup {
           end, { 'i', 's' }),
         },
         sources = {
+          -- { name = 'supermaven' },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
@@ -753,22 +769,22 @@ require('lazy').setup {
   --     vim.cmd.colorscheme 'rose-pine'
   --   end,
   -- },
-  {
-    'scottmckendry/cyberdream.nvim',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require('cyberdream').setup {
-        -- Recommended - see "Configuring" below for more config options
-        transparent = true,
-        italic_comments = true,
-        hide_fillchars = true,
-        borderless_telescope = false,
-        terminal_colors = true,
-      }
-      vim.cmd 'colorscheme cyberdream' -- set the colorscheme
-    end,
-  },
+  -- {
+  --   'scottmckendry/cyberdream.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('cyberdream').setup {
+  --       -- Recommended - see "Configuring" below for more config options
+  --       transparent = true,
+  --       italic_comments = true,
+  --       hide_fillchars = true,
+  --       borderless_telescope = false,
+  --       terminal_colors = true,
+  --     }
+  --     vim.cmd 'colorscheme cyberdream' -- set the colorscheme
+  --   end,
+  -- },
 
   -- {
   --   'ellisonleao/gruvbox.nvim',
@@ -783,18 +799,34 @@ require('lazy').setup {
   --   end,
   --   opts = {},
   -- },
-  -- {
-  --   'catppuccin/nvim',
-  --   name = 'catppuccin',
-  --   priority = 1000,
-  --   opts = {},
-  --   config = function()
-  --     vim.cmd.colorscheme 'catppuccin'
-  --
-  --     -- You can configure highlights by doing something like
-  --     vim.cmd.hi 'Comment gui=none'
-  --   end,
-  -- },
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    config = function()
+      require('catppuccin').setup {
+        flavour = 'frappe',
+        transparent_background = true,
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          notify = false,
+          mini = {
+            enabled = true,
+            indentscope_color = '',
+          },
+          telescope = {
+            enabled = true,
+            style = 'nvchad',
+          },
+        },
+      }
+      vim.cmd.colorscheme 'catppuccin-frappe'
+      vim.cmd.hi 'Comment gui=none'
+    end,
+  },
   -- {
   --   'navarasu/onedark.nvim',
   --   opts = {
@@ -831,6 +863,7 @@ require('lazy').setup {
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      require('mini.move').setup()
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -936,6 +969,337 @@ require('lazy').setup {
       },
     },
     opts = {},
+  },
+  -- {
+  --   'CopilotC-Nvim/CopilotChat.nvim',
+  --   branch = 'canary',
+  --   dependencies = {
+  --     { 'github/copilot.vim' },
+  --     { 'nvim-lua/plenary.nvim' }, -- for curl, log wrapper
+  --     { 'nvim-telescope/telescope.nvim' }, -- Use telescope for help actions
+  --   },
+  --   opts = {
+  --     debug = true, -- Enable debugging
+  --     show_help = true, -- Show help actions
+  --     window = {
+  --       layout = 'float',
+  --     },
+  --     auto_follow_cursor = false, -- Don't follow the cursor after getting response
+  --   },
+  --   config = function(_, opts)
+  --     local chat = require 'CopilotChat'
+  --     local select = require 'CopilotChat.select'
+  --     -- Use unnamed register for the selection
+  --     opts.selection = select.unnamed
+  --     chat.setup(opts)
+  --
+  --     vim.api.nvim_create_user_command('CopilotChatVisual', function(args)
+  --       chat.ask(args.args, { selection = select.visual })
+  --     end, { nargs = '*', range = true })
+  --
+  --     -- Inline chat with Copilot
+  --     vim.api.nvim_create_user_command('CopilotChatInline', function(args)
+  --       chat.ask(args.args, {
+  --         selection = select.visual,
+  --         window = {
+  --           layout = 'float',
+  --           relative = 'cursor',
+  --           width = 1,
+  --           height = 0.4,
+  --           row = 1,
+  --         },
+  --       })
+  --     end, { nargs = '*', range = true })
+  --
+  --     -- Restore CopilotChatBuffer
+  --     vim.api.nvim_create_user_command('CopilotChatBuffer', function(args)
+  --       chat.ask(args.args, { selection = select.buffer })
+  --     end, { nargs = '*', range = true })
+  --   end,
+  --   event = 'VeryLazy',
+  --   keys = {
+  --     -- Show help actions with telescope
+  --     {
+  --       '<leader>cch',
+  --       function()
+  --         local actions = require 'CopilotChat.actions'
+  --         require('CopilotChat.integrations.telescope').pick(actions.help_actions())
+  --       end,
+  --       desc = 'CopilotChat - Help actions',
+  --     },
+  --     -- Show prompts actions with telescope
+  --     {
+  --       '<leader>ccp',
+  --       function()
+  --         local actions = require 'CopilotChat.actions'
+  --         require('CopilotChat.integrations.telescope').pick(actions.prompt_actions())
+  --       end,
+  --       desc = 'CopilotChat - Prompt actions',
+  --     },
+  --     -- Code related commands
+  --     { '<leader>cce', '<cmd>CopilotChatExplain<cr>', desc = 'CopilotChat - Explain code' },
+  --     { '<leader>cct', '<cmd>CopilotChatTests<cr>', desc = 'CopilotChat - Generate tests' },
+  --     { '<leader>ccr', '<cmd>CopilotChatReview<cr>', desc = 'CopilotChat - Review code' },
+  --     { '<leader>ccR', '<cmd>CopilotChatRefactor<cr>', desc = 'CopilotChat - Refactor code' },
+  --     { '<leader>ccn', '<cmd>CopilotChatBetterNamings<cr>', desc = 'CopilotChat - Better Naming' },
+  --     -- Chat with Copilot in visual mode
+  --     {
+  --       '<leader>ccv',
+  --       ':CopilotChatVisual',
+  --       mode = 'x',
+  --       desc = 'CopilotChat - Open in vertical split',
+  --     },
+  --     {
+  --       '<leader>ccx',
+  --       ':CopilotChatInline<cr>',
+  --       mode = 'x',
+  --       desc = 'CopilotChat - Inline chat',
+  --     },
+  --     -- Custom input for CopilotChat
+  --     {
+  --       '<leader>cci',
+  --       function()
+  --         local input = vim.fn.input 'Ask Copilot: '
+  --         if input ~= '' then
+  --           vim.cmd('CopilotChat ' .. input)
+  --         end
+  --       end,
+  --       desc = 'CopilotChat - Ask input',
+  --     },
+  --     {
+  --       '<leader>ccq',
+  --       function()
+  --         local input = vim.fn.input 'Quick Chat: '
+  --         if input ~= '' then
+  --           vim.cmd('CopilotChatBuffer ' .. input)
+  --         end
+  --       end,
+  --       desc = 'CopilotChat - Quick chat',
+  --     },
+  --     -- Debug
+  --     { '<leader>ccd', '<cmd>CopilotChatDebugInfo<cr>', desc = 'CopilotChat - Debug Info' },
+  --     -- Fix the issue with diagnostic
+  --     { '<leader>ccf', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'CopilotChat - Fix Diagnostic' },
+  --     -- Clear buffer and chat history
+  --     { '<leader>ccl', '<cmd>CopilotChatReset<cr>', desc = 'CopilotChat - Clear buffer and chat history' },
+  --     -- Toggle Copilot Chat Vsplit
+  --     { '<leader>ccv', '<cmd>CopilotChatToggle<cr>', desc = 'CopilotChat - Toggle Vsplit' },
+  --   },
+  -- },
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {}
+    end,
+  },
+  {
+    'folke/zen-mode.nvim',
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    'midoBB/nvim-quicktype',
+    cmd = 'QuickType',
+    ft = { 'typescript', 'python', 'java', 'go', 'rust', 'cs', 'swift', 'elixir', 'kotlin', 'typescriptreact' },
+  },
+  {
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
+    opts = {
+      bigfile = { enabled = true },
+      dashboard = { enabled = true },
+      indent = { enabled = true },
+      input = { enabled = true },
+      notifier = {
+        enabled = true,
+        timeout = 3000,
+      },
+      picker = { enabled = true },
+      quickfile = { enabled = true },
+      scroll = { enabled = false },
+      statuscolumn = { enabled = true },
+      words = { enabled = true },
+      styles = {
+        notification = {
+          -- wo = { wrap = true } -- Wrap notifications
+        },
+      },
+    },
+    keys = {
+      {
+        '<leader>z',
+        function()
+          Snacks.zen()
+        end,
+        desc = 'Toggle Zen Mode',
+      },
+      {
+        '<leader>Z',
+        function()
+          Snacks.zen.zoom()
+        end,
+        desc = 'Toggle Zoom',
+      },
+      {
+        '<leader>.',
+        function()
+          Snacks.scratch()
+        end,
+        desc = 'Toggle Scratch Buffer',
+      },
+      {
+        '<leader>S',
+        function()
+          Snacks.scratch.select()
+        end,
+        desc = 'Select Scratch Buffer',
+      },
+      {
+        '<leader>n',
+        function()
+          Snacks.notifier.show_history()
+        end,
+        desc = 'Notification History',
+      },
+      {
+        '<leader>bd',
+        function()
+          Snacks.bufdelete()
+        end,
+        desc = 'Delete Buffer',
+      },
+      {
+        '<leader>cR',
+        function()
+          Snacks.rename.rename_file()
+        end,
+        desc = 'Rename File',
+      },
+      {
+        '<leader>gB',
+        function()
+          Snacks.gitbrowse()
+        end,
+        desc = 'Git Browse',
+        mode = { 'n', 'v' },
+      },
+      {
+        '<leader>gb',
+        function()
+          Snacks.git.blame_line()
+        end,
+        desc = 'Git Blame Line',
+      },
+      {
+        '<leader>gf',
+        function()
+          Snacks.lazygit.log_file()
+        end,
+        desc = 'Lazygit Current File History',
+      },
+      {
+        '<leader>gg',
+        function()
+          Snacks.lazygit()
+        end,
+        desc = 'Lazygit',
+      },
+      {
+        '<leader>gl',
+        function()
+          Snacks.lazygit.log()
+        end,
+        desc = 'Lazygit Log (cwd)',
+      },
+      {
+        '<leader>un',
+        function()
+          Snacks.notifier.hide()
+        end,
+        desc = 'Dismiss All Notifications',
+      },
+      {
+        '<c-/>',
+        function()
+          Snacks.terminal()
+        end,
+        desc = 'Toggle Terminal',
+      },
+      {
+        '<c-_>',
+        function()
+          Snacks.terminal()
+        end,
+        desc = 'which_key_ignore',
+      },
+      {
+        ']]',
+        function()
+          Snacks.words.jump(vim.v.count1)
+        end,
+        desc = 'Next Reference',
+        mode = { 'n', 't' },
+      },
+      {
+        '[[',
+        function()
+          Snacks.words.jump(-vim.v.count1)
+        end,
+        desc = 'Prev Reference',
+        mode = { 'n', 't' },
+      },
+      {
+        '<leader>N',
+        desc = 'Neovim News',
+        function()
+          Snacks.win {
+            file = vim.api.nvim_get_runtime_file('doc/news.txt', false)[1],
+            width = 0.6,
+            height = 0.6,
+            wo = {
+              spell = false,
+              wrap = false,
+              signcolumn = 'yes',
+              statuscolumn = ' ',
+              conceallevel = 3,
+            },
+          }
+        end,
+      },
+    },
+    init = function()
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'VeryLazy',
+        callback = function()
+          -- Setup some globals for debugging (lazy-loaded)
+          _G.dd = function(...)
+            Snacks.debug.inspect(...)
+          end
+          _G.bt = function()
+            Snacks.debug.backtrace()
+          end
+          vim.print = _G.dd -- Override print to use snacks for `:=` command
+
+          -- Create some toggle mappings
+          Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
+          Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
+          Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
+          Snacks.toggle.diagnostics():map '<leader>ud'
+          Snacks.toggle.line_number():map '<leader>ul'
+          Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
+          Snacks.toggle.treesitter():map '<leader>uT'
+          Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
+          Snacks.toggle.inlay_hints():map '<leader>uh'
+          Snacks.toggle.indent():map '<leader>ug'
+          Snacks.toggle.dim():map '<leader>uD'
+        end,
+      })
+    end,
   },
 }
 

@@ -1,0 +1,6 @@
+--target=~/.config
+--ignore=.stowrc
+--ignore=DS_Store
+--ignore=bin/*
+--ignore=background/*
+--ignore=atuin/*

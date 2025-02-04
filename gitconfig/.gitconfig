@@ -1,13 +1,25 @@
 [user]
-	email = hermann.owren.elton@hotmail.com
-	name = her0elt
+	email = me@her0elt.com
+	name = Hermann Elton
 [alias]
     pf=!git push -f
     p=!git push
     currentgitbranch=!git symbolic-ref --short HEAD
-	ac = !git add -A && git commit -am
-	amac = !git add -A && git commit --amend --no-edit
+    ac = !git add -A && git commit -am
+    amac = !git add -A && git commit --amend --no-edit
     upstream = !git push -u origin $(git currentgitbranch)
-    cleanup=!delete-branches
+    cleanup=!~/.local/bin/delete-branches
+    contributors = "!git log --format='%aN' | sort -u | while read name; do echo \"$name\t\"; git log --author=\"$name\" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf \"added lines: %s, removed lines: %s, total lines: %s\\n\", add, subs, loc }' -; done"
 
 
+
+
+
+
+
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

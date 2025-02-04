@@ -77,6 +77,7 @@ export FZF_BASE="$HOME/fzf/"
 plugins=(
     fzf
     git
+    zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -106,58 +107,32 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source $HOME/.zsh_profile
+source ~/.zsh_profile
 
-export GOPATH="$HOME/go_projects"
 export cargo="$HOME/.cargo/env"
-export OZHOME="/usr/"
 
-
-# Add JBang to environment
-alias j!=jbang
-export PATH="$HOME/.jbang/bin:$PATH"
-
-# add Pulumi to the PATH
-export PATH=$PATH:$HOME/.pulumi/bin
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=$PATH:$JAVA_HOME/bin
-export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
-export PATH="$PATH:$HOME/kotlin-language-server/server/build/install/server/bin/kotlin-language-server"
+
+# source ~/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+
+fpath+=${ZDOTDIR:-~}/.zsh_functions
+fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/hermann/google-cloud-sdk/path.zsh.inc' ]; then . '/home/hermann/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/hermann/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/hermann/google-cloud-sdk/completion.zsh.inc'; fi
-
-# bun completions
-[ -s "/home/hermann/.bun/_bun" ] && source "/home/hermann/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-export WASMTIME_HOME="$HOME/.wasmtime"
-
-export PATH="$WASMTIME_HOME/bin:$PATH"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-[ -f "/home/hermann/.ghcup/env" ] && source "/home/hermann/.ghcup/env" # ghcup-enveval "$(/bin/brew shellenv)"
-
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  #
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
 # pnpm
-export PNPM_HOME="/home/hermann/.local/share/pnpm"
+export PNPM_HOME="/Users/hermannelton/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-fpath+=${ZDOTDIR:-~}/.zsh_functions
-fpath+=${ZDOTDIR:-~}/.zsh_functions
+#
+#
+printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh" }}\x9c'
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
