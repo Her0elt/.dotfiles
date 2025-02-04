@@ -19,11 +19,6 @@
       environment.systemPackages =
         [
           pkgs.vim
-          pkgs.direnv
-          pkgs.sshs
-          pkgs.glow
-          pkgs.nushell
-          pkgs.carapace
         ];
       services.nix-daemon.enable = true;
       nix.settings.experimental-features = "nix-command flakes";
@@ -51,8 +46,6 @@
       # Homebrew needs to be installed on its own!
       homebrew.enable = true;
       homebrew.casks = [
-              "arc"
-              "ghostty"
       ];
       homebrew.brews = [
       ];
