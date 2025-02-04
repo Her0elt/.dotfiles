@@ -1,5 +1,7 @@
 --target=~/.config
 --ignore=.stowrc
+--ignore=zsh/*
+--ignore=tmux/*
 --ignore=DS_Store
 --ignore=bin/*
 --ignore=background/*
