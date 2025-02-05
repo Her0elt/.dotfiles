@@ -5,8 +5,8 @@
 
 {
   home.username = "hermannelton";
-  home.homeDirectory = "/Users/hermannelton/";
-  home.stateVersion = "23.05"; # Please read the comment before changing.
+  home.homeDirectory = "/Users/hermannelton";
+  home.stateVersion = "24.11"; # Please read the comment before changing.
 
 # Makes sense for user specific applications that shouldn't be available system-wide
   home.packages = [
@@ -15,19 +15,13 @@
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {
-    # ".zshrc".source = ~/dotfiles/zshrc/.zshrc;
-    # ".config/wezterm".source = ~/dotfiles/wezterm;
-    # ".config/skhd".source = ~/dotfiles/skhd;
-    # ".config/starship".source = ~/dotfiles/starship;
-    # ".config/zellij".source = ~/dotfiles/zellij;
+    # ".zshrc".source = ~/.dotfiles/zsh/.zshrc;
     # ".config/nvim".source = ~/dotfiles/nvim;
     # ".config/nix".source = ~/dotfiles/nix;
     # ".config/nix-darwin".source = ~/dotfiles/nix-darwin;
     # ".config/tmux".source = ~/dotfiles/tmux;
     # ".config/ghostty".source = ~/dotfiles/ghostty;
     # ".config/aerospace".source = ~/dotfiles/aerospace;
-    # ".config/sketchybar".source = ~/dotfiles/sketchybar;
-    # ".config/nushell".source = ~/dotfiles/nushell;
   };
 
   home.sessionVariables = {

@@ -136,5 +136,9 @@ printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh" }}\x9c'
 
 export NIX_CONF_DIR=/Users/hermannelton/.config/nix
 
+
+ export XDG_CONFIG_HOME="/Users/hermannelton/.config"
+
+
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
