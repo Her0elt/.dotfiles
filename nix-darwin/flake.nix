@@ -17,11 +17,9 @@
   let
     configuration = { pkgs, ... }: {
       # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
+      environment.variables = { EDITOR = "vim"; };
       environment.systemPackages =
         [
-          pkgs.vim
-          pkgs.neovim
           pkgs.pnpm
           pkgs.fzf
           pkgs.go
@@ -45,6 +43,7 @@
           pkgs.aerospace
           pkgs.stow
           pkgs.carapace
+          (pkgs.neovim.override { vimAlias = true; })
         ];
       services.nix-daemon.enable = true;
       nix.settings.experimental-features = "nix-command flakes";
