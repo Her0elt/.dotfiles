@@ -21,11 +21,29 @@
       environment.systemPackages =
         [
           pkgs.vim
+          pkgs.neovim
+          pkgs.pnpm
+          pkgs.fzf
+          pkgs.go
+          pkgs.git
+          pkgs.wget
+          pkgs.tmux
+          pkgs.docker
+          pkgs.nodejs
+          pkgs.openjdk
           pkgs.slack
+          pkgs.dotnet-sdk
           pkgs.direnv
           pkgs.sshs
           pkgs.glow
           pkgs.nushell
+          pkgs.tableplus
+          pkgs.raycast
+          # pkgs.ghostty currently broken
+          pkgs.rustc
+          pkgs.cargo
+          pkgs.aerospace
+          pkgs.stow
           pkgs.carapace
         ];
       services.nix-daemon.enable = true;
@@ -43,8 +61,13 @@
       nix.useDaemon = true;
 
       system.defaults = {
+        NSGlobalDomain.AppleInterfaceStyle = "Dark";
         dock.autohide = true;
         dock.mru-spaces = false;
+        finder.AppleShowAllFiles = true;
+        finder.ShowStatusBar = true;
+        finder.ShowPathbar = true;
+        finder.QuitMenuItem = true;
         finder.AppleShowAllExtensions = true;
         finder.FXPreferredViewStyle = "clmv";
         loginwindow.LoginwindowText = "Hermann Elton";
@@ -56,35 +79,16 @@
       homebrew.enable = true;
       homebrew.casks = [
           "ghostty"
-          "docker"
-          "aerospace"
-          "raycast"
-          "dotnet"
-          # "1password"
-          # "tableplus"
       ];
       homebrew.brews = [
-          "stow"
-          "openjdk"
-          "rust"
-          "pnpm"
-          "npm"
           "zsh-autosuggestions"
           "zsh-syntax-highlighting"
           "zsh-completions"
           "docker-machine"
-          "wget"
-          "node"
-          "telnet"
-          "tmux"
           "nvm"
           "python@3.9"
           "gleam"
-          "go"
           "docker-compose"
-          "git"
-          "fzf"
-          "neovim"
       ];
     };
   in
