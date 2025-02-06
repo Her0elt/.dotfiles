@@ -6,13 +6,14 @@
     # nixpkgs.url = "github:NixOS/nixpkgs?rev=d2faa1bbca1b1e4962ce7373c5b0879e5b12cef2";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     # home-manager = {
     #   url = "github:nix-community/home-manager";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
   let
     configuration = { pkgs, ... }: {
       # List packages installed in system profile. To search by name, run:
@@ -64,12 +65,16 @@
       ];
       homebrew.brews = [
           "stow"
+          "openjdk"
           "rust"
           "pnpm"
           "npm"
           "zsh-autosuggestions"
           "zsh-syntax-highlighting"
+          "zsh-completions"
+          "docker-machine"
           "wget"
+          "node"
           "telnet"
           "tmux"
           "nvm"
