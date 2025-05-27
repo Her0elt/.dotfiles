@@ -113,15 +113,9 @@ export cargo="$HOME/.cargo/env"
 
 export PATH=$PATH:$JAVA_HOME/bin
 
-# source ~/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-
-fpath+=${ZDOTDIR:-~}/.zsh_functions
-fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  #
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+export NVM_DIR="$HOME/.nvm"
 
 # pnpm
 export PNPM_HOME="/Users/hermannelton/Library/pnpm"
@@ -139,6 +133,17 @@ export NIX_CONF_DIR=/Users/hermannelton/.config/nix
 
  export XDG_CONFIG_HOME="/Users/hermannelton/.config"
 
+ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+
+
+
+ export DOTNET_ROOT="/nix/store/381pjcl0yngb8pj8vv8h6pbqa93qcryi-dotnet-sdk-9.0.200/share/dotnet/sdk"
+
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+export PATH="$HOME/.zigup:$HOME/.zig:$PATH"
+
+. "$HOME/.local/bin/env"
+export PATH="/Users/hermannelton/.pixi/bin:$PATH"

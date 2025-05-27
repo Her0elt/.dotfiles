@@ -163,6 +163,9 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins, you can run
 --    :Lazy update
 --
+--
+--
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup {
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -311,9 +314,9 @@ require('lazy').setup {
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      -- vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+      -- vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -350,8 +353,9 @@ require('lazy').setup {
       -- Automatically install LSPs and related tools to stdpath for neovim
       'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
+      'saghen/blink.cmp',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
+      'Hoffs/omnisharp-extended-lsp.nvim',
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
@@ -457,6 +461,12 @@ require('lazy').setup {
               callback = vim.lsp.buf.clear_references,
             })
           end
+          if client and client.name == 'omnisharp' then
+            map('gd', require('omnisharp_extended').telescope_lsp_definition, 'Omnisharp: [G]oto [D]efinition')
+            map('gr', require('omnisharp_extended').telescope_lsp_references, 'Omnisharp: [G]oto [R]eferences')
+            map('gI', require('omnisharp_extended').telescope_lsp_implementation, 'Omnisharp: [G]oto [I]mplementation')
+            map('<leader>D', require('omnisharp_extended').telescope_lsp_type_definition, 'Omnisharp: Type [D]efinition')
+          end
         end,
       })
 
@@ -465,7 +475,7 @@ require('lazy').setup {
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -477,7 +487,7 @@ require('lazy').setup {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        tsserver = {
+        ts_ls = {
           init_options = {
             preferences = {
               importModuleSpecifierPreference = 'non-relative',
@@ -500,6 +510,26 @@ require('lazy').setup {
         svelte = {},
         dockerls = {},
         dotls = {},
+        csharpier = {},
+        omnisharp = {
+          enable_roslyn_analysers = true,
+          enable_import_completion = true,
+          organize_imports_on_format = true,
+          enable_decompilation_support = true,
+          handlers = {
+            ['textDocument/definition'] = function()
+              return require('omnisharp_extended').handler()
+            end,
+          },
+          -- handlers = {
+          --   ['textDocument/definition'] = require('omnisharp_extended').definition_handler,
+          --   ['textDocument/typeDefinition'] = require('omnisharp_extended').type_definition_handler,
+          --   ['textDocument/references'] = require('omnisharp_extended').references_handler,
+          --   ['textDocument/implementation'] = require('omnisharp_extended').implementation_handler,
+          -- },
+          filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
+        },
+        netcoredbg = {},
         gopls = {},
         html = {},
         kotlin_language_server = {},
@@ -568,9 +598,10 @@ require('lazy').setup {
         'svelte-language-server',
         'docker-compose-language-service',
         'dockerfile-language-server',
-        'dot-language-server',
+        'omnisharp',
         'eslint_d',
         'eslint',
+        'netcoredbg',
         'flake8',
         'html-lsp',
         'kotlin-language-server',
@@ -585,6 +616,7 @@ require('lazy').setup {
         'zls',
         'prettier',
         'prettierd',
+        'csharpier',
         'rust-analyzer',
         'sonarlint-language-server',
         'stylua',
@@ -597,6 +629,8 @@ require('lazy').setup {
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        ensure_installed = ensure_installed,
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -613,23 +647,54 @@ require('lazy').setup {
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    lazy = false,
+    keys = {
+      {
+        '<leader>f',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
+        end,
+        mode = '',
+        desc = '[F]ormat buffer',
+      },
+    },
     opts = {
       notify_on_error = false,
       format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
       },
+      lang_to_ext = {
+        bash = 'sh',
+        c_sharp = 'cs',
+        elixir = 'exs',
+        javascript = 'js',
+        julia = 'jl',
+        latex = 'tex',
+        markdown = 'md',
+        python = 'py',
+        ruby = 'rb',
+        rust = 'rs',
+        teal = 'tl',
+        typescript = 'ts',
+      },
+      formatters = {
+        csharpier = {
+          command = 'dotnet',
+          args = { 'csharpier', 'format' },
+        },
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
         --
-        typescript = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
-        typescriptreact = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
-        javascript = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
-        javascriptreact = { { 'prettierd', 'prettier' }, { 'eslint_d', 'eslint' } },
+        typescript = { 'prettierd', 'eslint_d', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'eslint_d', stop_after_first = true },
+        javascript = { 'prettierd', 'eslint_d', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'eslint_d', stop_after_first = true },
         cs = { 'csharpier' },
-
+        c_sharp = { 'csharpier' },
         cpp = { 'clang_format' },
 
         -- Use the "_" filetype to run formatters on filetypes that don't
@@ -638,100 +703,174 @@ require('lazy').setup {
       },
     },
   },
-
-  { -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
+  {
+    'saghen/blink.cmp',
+    -- optional: provides snippets for the snippet source
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
+      'rafamadriz/friendly-snippets',
       {
-        'L3MON4D3/LuaSnip',
-        build = (function()
-          -- Build Step is needed for regex support in snippets
-          -- This step is not supported in many windows environments
-          -- Remove the below condition to re-enable on windows
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
+        'supermaven-inc/supermaven-nvim',
+        opts = {
+          disable_inline_completion = true, -- disables inline completion for use with cmp
+          disable_keymaps = true, -- disables built in keymaps for more manual control
+        },
       },
-      'saadparwaiz1/cmp_luasnip',
-
-      -- Adds other completion capabilities.
-      --  nvim-cmp does not ship with all sources by default. They are split
-      --  into multiple repos for maintenance purposes.
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-path',
-
-      -- If you want to add a bunch of pre-configured snippets,
-      --    you can use this plugin to help you. It even has snippets
-      --    for various frameworks/libraries/etc. but you will have to
-      --    set up the ones that are useful for you.
-      -- 'rafamadriz/friendly-snippets',
+      {
+        'huijiro/blink-cmp-supermaven',
+      },
     },
-    config = function()
-      -- See `:help cmp`
-      local cmp = require 'cmp'
-      local luasnip = require 'luasnip'
-      luasnip.config.setup {}
 
-      cmp.setup {
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
+    -- use a release tag to download pre-built binaries
+    version = '1.*',
+    -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+    -- build = 'cargo build --release',
+    -- If you use nix, you can build from source using latest nightly rust with:
+    -- build = 'nix run .#build-plugin',
+
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
+      -- 'super-tab' for mappings similar to vscode (tab to accept)
+      -- 'enter' for enter to accept
+      -- 'none' for no mappings
+      --
+      -- All presets have the following mappings:
+      -- C-space: Open menu or open docs if already open
+      -- C-n/C-p or Up/Down: Select next/previous item
+      -- C-e: Hide menu
+      -- C-k: Toggle signature help (if signature.enabled = true)
+      --
+      -- See :h blink-cmp-config-keymap for defining your own keymap
+      keymap = { preset = 'default' },
+
+      appearance = {
+        -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+        -- Adjusts spacing to ensure icons are aligned
+        nerd_font_variant = 'mono',
+      },
+
+      -- (Default) Only show the documentation popup when manually triggered
+      signature = { enabled = true },
+
+      -- Default list of enabled providers defined so that you can extend it
+      -- elsewhere in your config, without redefining it, due to `opts_extend`
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        providers = {
+          supermaven = {
+            name = 'supermaven',
+            module = 'blink-cmp-supermaven',
+            async = true,
+          },
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
+      },
 
-        -- For an understanding of why these mappings were
-        -- chosen, you will need to read `:help ins-completion`
-        --
-        -- No, but seriously. Please read `:help ins-completion`, it is really good!
-        mapping = cmp.mapping.preset.insert {
-          -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
-
-          -- Accept ([y]es) the completion.
-          --  This will auto-import if your LSP supports it.
-          --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
-
-          -- Manually trigger a completion from nvim-cmp.
-          --  Generally you don't need this, because nvim-cmp will display
-          --  completions whenever it has completion options available.
-          ['<C-Space>'] = cmp.mapping.complete {},
-
-          -- Think of <c-l> as moving to the right of your snippet expansion.
-          --  So if you have a snippet that's like:
-          --  function $name($args)
-          --    $body
-          --  end
-          --
-          -- <c-l> will move you to the right of each of the expansion locations.
-          -- <c-h> is similar, except moving you backwards.
-          ['<C-l>'] = cmp.mapping(function()
-            if luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            end
-          end, { 'i', 's' }),
-          ['<C-h>'] = cmp.mapping(function()
-            if luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
-            end
-          end, { 'i', 's' }),
-        },
-        sources = {
-          -- { name = 'supermaven' },
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' },
-          { name = 'path' },
-        },
-      }
-    end,
+      -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+      -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+      -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+      --
+      -- See the fuzzy documentation for more information
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
+    },
   },
+
+  -- { -- Autocompletion
+  --   'hrsh7th/nvim-cmp',
+  --   event = 'InsertEnter',
+  --   dependencies = {
+  --     -- Snippet Engine & its associated nvim-cmp source
+  --     {
+  --       'L3MON4D3/LuaSnip',
+  --       build = (function()
+  --         -- Build Step is needed for regex support in snippets
+  --         -- This step is not supported in many windows environments
+  --         -- Remove the below condition to re-enable on windows
+  --         if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+  --           return
+  --         end
+  --         return 'make install_jsregexp'
+  --       end)(),
+  --     },
+  --     'saadparwaiz1/cmp_luasnip',
+  --
+  --     -- Adds other completion capabilities.
+  --     --  nvim-cmp does not ship with all sources by default. They are split
+  --     --  into multiple repos for maintenance purposes.
+  --     'hrsh7th/cmp-nvim-lsp',
+  --     'hrsh7th/cmp-path',
+  --
+  --     -- If you want to add a bunch of pre-configured snippets,
+  --     --    you can use this plugin to help you. It even has snippets
+  --     --    for various frameworks/libraries/etc. but you will have to
+  --     --    set up the ones that are useful for you.
+  --     -- 'rafamadriz/friendly-snippets',
+  --   },
+  --   config = function()
+  --     -- See `:help cmp`
+  --     local cmp = require 'cmp'
+  --     local luasnip = require 'luasnip'
+  --     luasnip.config.setup {}
+  --
+  --     cmp.setup {
+  --       snippet = {
+  --         expand = function(args)
+  --           luasnip.lsp_expand(args.body)
+  --         end,
+  --       },
+  --       completion = { completeopt = 'menu,menuone,noinsert' },
+  --
+  --       -- For an understanding of why these mappings were
+  --       -- chosen, you will need to read `:help ins-completion`
+  --       --
+  --       -- No, but seriously. Please read `:help ins-completion`, it is really good!
+  --       mapping = cmp.mapping.preset.insert {
+  --         -- Select the [n]ext item
+  --         ['<C-n>'] = cmp.mapping.select_next_item(),
+  --         -- Select the [p]revious item
+  --         ['<C-p>'] = cmp.mapping.select_prev_item(),
+  --
+  --         -- Accept ([y]es) the completion.
+  --         --  This will auto-import if your LSP supports it.
+  --         --  This will expand snippets if the LSP sent a snippet.
+  --         ['<C-y>'] = cmp.mapping.confirm { select = true },
+  --
+  --         -- Manually trigger a completion from nvim-cmp.
+  --         --  Generally you don't need this, because nvim-cmp will display
+  --         --  completions whenever it has completion options available.
+  --         ['<C-Space>'] = cmp.mapping.complete {},
+  --
+  --         -- Think of <c-l> as moving to the right of your snippet expansion.
+  --         --  So if you have a snippet that's like:
+  --         --  function $name($args)
+  --         --    $body
+  --         --  end
+  --         --
+  --         -- <c-l> will move you to the right of each of the expansion locations.
+  --         -- <c-h> is similar, except moving you backwards.
+  --         ['<C-l>'] = cmp.mapping(function()
+  --           if luasnip.expand_or_locally_jumpable() then
+  --             luasnip.expand_or_jump()
+  --           end
+  --         end, { 'i', 's' }),
+  --         ['<C-h>'] = cmp.mapping(function()
+  --           if luasnip.locally_jumpable(-1) then
+  --             luasnip.jump(-1)
+  --           end
+  --         end, { 'i', 's' }),
+  --       },
+  --       sources = {
+  --         -- { name = 'supermaven' },
+  --         -- { name = 'copilot' },
+  --         { name = 'easy-dotnet' },
+  --         { name = 'nvim_lsp' },
+  --         { name = 'jupynium', priority = 1000 }, -- consider higher priority than LSP
+  --         { name = 'luasnip' },
+  --         { name = 'path' },
+  --       },
+  --     }
+  --   end,
+  -- },
 
   -- {
   --   'folke/tokyonight.nvim',
@@ -911,26 +1050,26 @@ require('lazy').setup {
   -- require 'her0elt.plugins.debug',
   require 'her0elt.plugins.indent_line',
   -- { import = 'custom.plugins' },
-  {
-    'nvim-tree/nvim-tree.lua',
-    dependencies = {
-      {
-        'nvim-tree/nvim-web-devicons',
-        opts = {},
-      },
-    },
-    cmd = { 'NvimTreeToggle', 'NvimTreeFocus' },
-    opts = {
-      update_focused_file = {
-        enable = true,
-        update_root = false,
-        ignore_list = {},
-      },
-    },
-    keys = {
-      { '<leader>e', '<cmd>NvimTreeToggle<CR>' },
-    },
-  },
+  -- {
+  --   'nvim-tree/nvim-tree.lua',
+  --   dependencies = {
+  --     {
+  --       'nvim-tree/nvim-web-devicons',
+  --       opts = {},
+  --     },
+  --   },
+  --   cmd = { 'NvimTreeToggle', 'NvimTreeFocus' },
+  --   opts = {
+  --     update_focused_file = {
+  --       enable = true,
+  --       update_root = false,
+  --       ignore_list = {},
+  --     },
+  --   },
+  --   keys = {
+  --     { '<leader>e', '<cmd>NvimTreeToggle<CR>' },
+  --   },
+  -- },
   {
     'christoomey/vim-tmux-navigator',
     cmd = {
@@ -1087,95 +1226,333 @@ require('lazy').setup {
   --     { '<leader>ccv', '<cmd>CopilotChatToggle<cr>', desc = 'CopilotChat - Toggle Vsplit' },
   --   },
   -- },
+  -- {
+  --   'zbirenbaum/copilot.lua',
+  --   cmd = 'Copilot',
+  --   event = 'InsertEnter',
+  --   config = function()
+  --     require('copilot').setup()
+  --   end,
+  -- },
+  -- {
+  --   'zbirenbaum/copilot-cmp',
+  --   config = function()
+  --     require('copilot_cmp').setup()
+  --   end,
+  -- },
   {
     'supermaven-inc/supermaven-nvim',
     config = function()
       require('supermaven-nvim').setup {}
     end,
   },
-  {
-    'folke/zen-mode.nvim',
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-  },
+  -- {
+  --   'folke/zen-mode.nvim',
+  --   opts = {
+  --     -- your configuration comes here
+  --     -- or leave it empty to use the default settings
+  --     -- refer to the configuration section below
+  --   },
+  -- },
   {
     'midoBB/nvim-quicktype',
     cmd = 'QuickType',
     ft = { 'typescript', 'python', 'java', 'go', 'rust', 'cs', 'swift', 'elixir', 'kotlin', 'typescriptreact' },
   },
-  --   {
-  --     'folke/snacks.nvim',
-  --     priority = 1000,
-  --     lazy = false,
-  --     ---@type snacks.Config
-  --     opts = {
-  --       bigfile = { enabled = true },
-  --       dashboard = { enabled = true },
-  --       indent = { enabled = true },
-  --       input = { enabled = true },
-  --       notifier = {
-  --         enabled = true,
-  --         timeout = 3000,
-  --       },
-  --       picker = { enabled = true },
-  --       quickfile = { enabled = true },
-  --       scroll = { enabled = false },
-  --       statuscolumn = { enabled = true },
-  --       words = { enabled = true },
-  --       styles = {
-  --         notification = {
-  --           -- wo = { wrap = true } -- Wrap notifications
-  --         },
-  --       },
-  --     },
-  --     keys = {
-  --       {
-  --         '<leader>z',
-  --         function()
-  --           Snacks.zen()
-  --         end,
-  --         desc = 'Toggle Zen Mode',
-  --       },
-  --       {
-  --         '<leader>cR',
-  --         function()
-  --           Snacks.rename.rename_file()
-  --         end,
-  --         desc = 'Rename File',
-  --       },
-  --     },
-  --     init = function()
-  --       vim.api.nvim_create_autocmd('User', {
-  --         pattern = 'VeryLazy',
-  --         callback = function()
-  --           -- Setup some globals for debugging (lazy-loaded)
-  --           _G.dd = function(...)
-  --             Snacks.debug.inspect(...)
-  --           end
-  --           _G.bt = function()
-  --             Snacks.debug.backtrace()
-  --           end
-  --           vim.print = _G.dd -- Override print to use snacks for `:=` command
-  --
-  --           -- Create some toggle mappings
-  --           Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
-  --           Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
-  --           Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
-  --           Snacks.toggle.diagnostics():map '<leader>ud'
-  --           Snacks.toggle.line_number():map '<leader>ul'
-  --           Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
-  --           Snacks.toggle.treesitter():map '<leader>uT'
-  --           Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
-  --           Snacks.toggle.inlay_hints():map '<leader>uh'
-  --           Snacks.toggle.indent():map '<leader>ug'
-  --           Snacks.toggle.dim():map '<leader>uD'
-  --         end,
-  --       })
-  --     end,
-  --   },
+  {
+    'folke/snacks.nvim',
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
+    opts = {
+      bigfile = { enabled = true },
+      dashboard = { enabled = false },
+      indent = { enabled = true },
+      input = { enabled = true },
+      notifier = {
+        enabled = false,
+        timeout = 3000,
+      },
+      ---@class snacks.explorer.Config
+      explorer = {
+        picker = {
+          find_files = {
+            hidden = true,
+          },
+        },
+        enabled = true,
+        replace_netrw = true,
+        layout = {
+          cycle = false,
+        },
+      },
+      picker = { enabled = true },
+      quickfile = { enabled = true },
+      scroll = { enabled = false },
+      statuscolumn = { enabled = true },
+      words = { enabled = true },
+      styles = {
+        notification = {
+          -- wo = { wrap = true } -- Wrap notifications
+        },
+      },
+    },
+    keys = {
+      {
+        '<leader>sf',
+        function()
+          Snacks.picker.files()
+        end,
+        desc = 'Find files',
+      },
+      {
+        '<leader>sw',
+        function()
+          Snacks.picker.grep()
+        end,
+        desc = 'Find files',
+      },
+      {
+        '<leader>e',
+        function()
+          Snacks.explorer()
+        end,
+        desc = 'Open Explorer',
+      },
+      {
+        '<leader>z',
+        function()
+          Snacks.zen()
+        end,
+        desc = 'Toggle Zen Mode',
+      },
+      {
+        '<leader>cR',
+        function()
+          Snacks.rename.rename_file()
+        end,
+        desc = 'Rename File',
+      },
+    },
+    init = function()
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'VeryLazy',
+        callback = function()
+          -- Setup some globals for debugging (lazy-loaded)
+          _G.dd = function(...)
+            Snacks.debug.inspect(...)
+          end
+          _G.bt = function()
+            Snacks.debug.backtrace()
+          end
+          vim.print = _G.dd -- Override print to use snacks for `:=` command
+
+          -- Create some toggle mappings
+          Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
+          Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
+          Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
+          Snacks.toggle.diagnostics():map '<leader>ud'
+          Snacks.toggle.line_number():map '<leader>ul'
+          Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
+          Snacks.toggle.treesitter():map '<leader>uT'
+          Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
+          Snacks.toggle.inlay_hints():map '<leader>uh'
+          Snacks.toggle.indent():map '<leader>ug'
+          Snacks.toggle.dim():map '<leader>uD'
+        end,
+      })
+    end,
+  },
+  {
+    'axelvc/template-string.nvim',
+    config = function()
+      require('template-string').setup {
+        filetypes = { 'html', 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue', 'svelte', 'python', 'cs' }, -- filetypes where the plugin is active
+        jsx_brackets = true, -- must add brackets to JSX attributes
+        remove_template_string = true, -- remove backticks when there are no template strings
+        restore_quotes = {
+          -- quotes used when "remove_template_string" option is enabled
+          normal = [[']],
+          jsx = [["]],
+        },
+      }
+    end,
+  },
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'leoluz/nvim-dap-go',
+      -- 'nicholasmata/nvim-dap-cs',
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-neotest/nvim-nio',
+      'williamboman/mason.nvim',
+      'GustavEikaas/easy-dotnet.nvim',
+    },
+    config = function()
+      local ui = require 'dapui'
+
+      require('dapui').setup()
+      require('dap-go').setup()
+      -- require('dap-cs').setup()
+
+      require('nvim-dap-virtual-text').setup {}
+      local dap = require 'dap'
+
+      local debuggers_folder = vim.fn.stdpath 'data' .. '/mason'
+
+      dap.adapters.coreclr = {
+        type = 'executable',
+        command = debuggers_folder .. '/packages/netcoredbg/netcoredbg',
+        args = { '--interpreter=vscode' },
+      }
+
+      -- Handled by nvim-dap-go
+      -- dap.adapters.go = {
+      --   type = "server",
+      --   port = "${port}",
+      --   executable = {
+      --     command = "dlv",
+      --     args = { "dap", "-l", "127.0.0.1:${port}" },
+      --   },
+      -- }
+
+      -- local elixir_ls_debugger = vim.fn.exepath 'elixir-ls-debugger'
+      -- if elixir_ls_debugger ~= '' then
+      --   dap.adapters.mix_task = {
+      --     type = 'executable',
+      --     command = elixir_ls_debugger,
+      --   }
+      --
+      --   dap.configurations.elixir = {
+      --     {
+      --       type = 'mix_task',
+      --       name = 'phoenix server',
+      --       task = 'phx.server',
+      --       request = 'launch',
+      --       projectDir = '${workspaceFolder}',
+      --       exitAfterTaskReturns = false,
+      --       debugAutoInterpretAllModules = false,
+      --     },
+      --   }
+      -- end
+      --
+      --
+      dap.adapters.netcoredbg = dap.adapters.coreclr
+      dap.adapters.dotnet = dap.adapters.coreclr
+      dap.configurations.cs = {
+        {
+          type = 'coreclr',
+          name = 'attach - netcoredbg',
+          request = 'attach',
+          processId = require('dap.utils').pick_process,
+        },
+      }
+
+      vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
+      vim.keymap.set('n', '<leader>gb', dap.run_to_cursor)
+
+      -- Eval var under cursor
+      vim.keymap.set('n', '<leader>un', function()
+        require('dapui').eval(nil, { enter = true })
+      end)
+
+      vim.keymap.set('n', '<F10>', function()
+        require('dapui').close()
+      end)
+      vim.keymap.set('n', '<F1>', dap.continue)
+      vim.keymap.set('n', '<F2>', dap.step_into)
+      vim.keymap.set('n', '<F3>', dap.step_over)
+      vim.keymap.set('n', '<F4>', dap.step_out)
+      vim.keymap.set('n', '<F5>', dap.step_back)
+      vim.keymap.set('n', '<F12>', dap.restart)
+
+      dap.listeners.before.attach.dapui_config = function()
+        ui.open()
+      end
+      dap.listeners.before.launch.dapui_config = function()
+        ui.open()
+      end
+      dap.listeners.before.event_terminated.dapui_config = function()
+        ui.close()
+      end
+      dap.listeners.before.event_exited.dapui_config = function()
+        ui.close()
+      end
+    end,
+  },
+  {
+    'GustavEikaas/easy-dotnet.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+    config = function()
+      require('easy-dotnet').setup()
+    end,
+  },
+  {
+    'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
+    config = function()
+      require('lsp_lines').setup()
+      vim.keymap.set('', '<Leader>l', require('lsp_lines').toggle, { desc = 'Toggle lsp_lines' })
+    end,
+  },
+  {
+    'Cliffback/netcoredbg-macOS-arm64.nvim',
+    dependencies = { 'mfussenegger/nvim-dap' },
+    config = function()
+      require('netcoredbg-macOS-arm64').setup(require 'dap')
+    end,
+  },
+  {
+    'kiyoon/jupynium.nvim',
+    -- build = 'pip3 install --user .',
+    build = 'uv pip install . --python=$HOME/.virtualenvs/jupynium/bin/python',
+    -- build = "conda run --no-capture-output -n jupynium pip install .",
+  },
+  'rcarriga/nvim-notify', -- optional
+  'stevearc/dressing.nvim', -- optional, UI for :JupyniumKernelSelect
+  {
+    'GCBallesteros/jupytext.nvim',
+    config = true,
+    -- Depending on your nvim distro or config you may need to make the loading not lazy
+    -- lazy=false,
+  },
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local harpoon = require 'harpoon'
+      harpoon.setup()
+
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end)
+      vim.keymap.set('n', '<C-e>', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end)
+
+      vim.keymap.set('n', '<leader>q', function()
+        harpoon:list():select(1)
+      end)
+      vim.keymap.set('n', '<leader>w', function()
+        harpoon:list():select(2)
+      end)
+      vim.keymap.set('n', '<leader>1', function()
+        harpoon:list():select(3)
+      end)
+      vim.keymap.set('n', '<leader>2', function()
+        harpoon:list():select(4)
+      end)
+
+      -- Toggle previous & next buffers stored within Harpoon list
+      vim.keymap.set('n', '<C-S-P>', function()
+        harpoon:list():prev()
+      end)
+      vim.keymap.set('n', '<C-S-N>', function()
+        harpoon:list():next()
+      end)
+    end,
+  },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`

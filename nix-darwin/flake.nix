@@ -17,11 +17,12 @@
   let
     configuration = { pkgs, ... }: {
       # List packages installed in system profile. To search by name, run:
-      environment.variables = { EDITOR = "vim"; };
+      environment.variables = { EDITOR = "nvim";};
       environment.systemPackages =
         [
           pkgs.pnpm
           pkgs.fzf
+          pkgs.fd
           pkgs.go
           pkgs.git
           pkgs.wget
@@ -29,37 +30,39 @@
           pkgs.docker
           pkgs.nodejs
           pkgs.openjdk
-          pkgs.slack
-          pkgs.dotnet-sdk
+          pkgs.dotnet-sdk_9
+          pkgs.ripgrep
           pkgs.direnv
           pkgs.sshs
           pkgs.glow
           pkgs.nushell
           pkgs.tableplus
           pkgs.raycast
-          # pkgs.ghostty currently broken
           pkgs.rustc
+          pkgs.podman
           pkgs.cargo
           pkgs.aerospace
           pkgs.stow
           pkgs.carapace
           (pkgs.neovim.override { vimAlias = true; })
         ];
-      services.nix-daemon.enable = true;
+      # services.nix-daemon.enable = true;
       nix.settings.experimental-features = "nix-command flakes";
       programs.zsh.enable = true;  # default shell on catalina
       system.configurationRevision = self.rev or self.dirtyRev or null;
       system.stateVersion = 6;
       nixpkgs.hostPlatform = "aarch64-darwin";
       nixpkgs.config.allowUnfree = true;
-      security.pam.enableSudoTouchIdAuth = true;
+      security.pam.services.sudo_local.enable = true;
+      security.pam.services.sudo_local.touchIdAuth = true;
 
       users.users.hermannelton.home = "/Users/hermannelton";
       # home-manager.backupFileExtension = "backup";
-      nix.configureBuildUsers = true;
-      nix.useDaemon = true;
+      # nix.configureBuildUsers = true;
+      # nix.useDaemon = true;
 
       system.defaults = {
+        NSGlobalDomain.AppleShowScrollBars = "Automatic";
         NSGlobalDomain.AppleInterfaceStyle = "Dark";
         dock.autohide = true;
         dock.mru-spaces = false;
@@ -76,10 +79,13 @@
 
       # Homebrew needs to be installed on its own!
       homebrew.enable = true;
+      homebrew.onActivation.upgrade = true;
       homebrew.casks = [
           "ghostty"
+          "hyperkey"
       ];
       homebrew.brews = [
+          "postgresql@14"
           "zsh-autosuggestions"
           "zsh-syntax-highlighting"
           "zsh-completions"
