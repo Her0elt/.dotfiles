@@ -25,4 +25,4 @@
 [commit]
 	gpgsign = true
 [core]
-	editor = nvim --wait
+	editor = nvim

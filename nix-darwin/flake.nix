@@ -15,9 +15,29 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
   let
-    configuration = { pkgs, ... }: {
+    configuration = { pkgs, ... }:
+    let
+      # dotnet9 = pkgs.writeShellScriptBin "dotnet9" ''
+      #   exec ${pkgs.dotnet-sdk_9}/bin/dotnet "$@"
+      # '';
+      # dotnet10 = pkgs.writeShellScriptBin "dotnet10" ''
+      #   exec ${pkgs.dotnet-sdk_10}/bin/dotnet "$@"
+      # '';
+      # dotnetDefault = pkgs.writeShellScriptBin "dotnet" ''
+      #   exec ${pkgs.dotnet-sdk_10}/bin/dotnet "$@"
+      # '';
+      dotnet = pkgs.dotnetCorePackages.dotnet_10.sdk;
+      dotnetWrapper = pkgs.writeShellScriptBin "dotnet" ''
+            export DOTNET_ROOT="${pkgs.dotnet-sdk_10}/share/dotnet"
+            exec "${dotnet}/share/dotnet/dotnet" "$@"
+      '';
+    in {
       # List packages installed in system profile. To search by name, run:
-      environment.variables = { EDITOR = "nvim";};
+      environment.variables = {
+            EDITOR = "nvim";
+            DOTNET_ROOT = "/opt/homebrew/opt/dotnet@10/libexec";
+
+          };
       environment.systemPackages =
         [
           pkgs.pnpm
@@ -28,10 +48,18 @@
           pkgs.wget
           pkgs.tmux
           pkgs.docker
-          pkgs.nodejs
           pkgs.openjdk
-          pkgs.dotnet-sdk_9
+          # dotnetWrapper
+          # pkgs.dotnetCorePackages.dotnet_10.sdk
+
+          # dotnet9
+          # dotnet10
+          # dotnetDefault
           pkgs.ripgrep
+          pkgs.just
+          pkgs.stack
+          #curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+          pkgs.ghc
           pkgs.direnv
           pkgs.sshs
           pkgs.glow
@@ -44,6 +72,10 @@
           pkgs.aerospace
           pkgs.stow
           pkgs.carapace
+          pkgs.gradle
+          pkgs.lazygit
+          # pkgs.sketchybar
+          # pkgs.sketchybar-app-font
           (pkgs.neovim.override { vimAlias = true; })
         ];
       # services.nix-daemon.enable = true;
@@ -55,15 +87,51 @@
       nixpkgs.config.allowUnfree = true;
       security.pam.services.sudo_local.enable = true;
       security.pam.services.sudo_local.touchIdAuth = true;
+      system.activationScripts.postUserActivation.text = ''
+        /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      '';
 
       users.users.hermannelton.home = "/Users/hermannelton";
       # home-manager.backupFileExtension = "backup";
       # nix.configureBuildUsers = true;
       # nix.useDaemon = true;
+      system.defaults.CustomUserPreferences = {
+        "com.apple.screencapture" = {
+          location = "~/screenshots";
+          type = "png";
+        };
+        "com.apple.finder" = {
+          ShowExternalHardDrivesOnDesktop = true;
+          ShowHardDrivesOnDesktop = true;
+          ShowMountedServersOnDesktop = true;
+          ShowRemovableMediaOnDesktop = true;
+          _FXSortFoldersFirst = true;
+          # When performing a search, search the current folder by default
+          FXDefaultSearchScope = "SCcf";
+        };
+        "com.apple.SoftwareUpdate" = {
+          AutomaticCheckEnabled = true;
+          # Check for software updates daily, not just once per week
+          ScheduleFrequency = 1;
+          # Download newly available updates in background
+          AutomaticDownload = 1;
+          # Install System data files & security updates
+          CriticalUpdateInstall = 1;
+        };
+        "com.apple.AdLib" = {
+          allowApplePersonalizedAdvertising = false;
+        };
+        "com.apple.TimeMachine".DoNotOfferNewDisksForBackup = true;
+        # Prevent Photos from opening automatically when devices are plugged in
+        "com.apple.ImageCapture".disableHotPlug = true;
+        # Turn on app auto-update
+        "com.apple.commerce".AutoUpdate = true;
+      };
 
       system.defaults = {
         NSGlobalDomain.AppleShowScrollBars = "Automatic";
         NSGlobalDomain.AppleInterfaceStyle = "Dark";
+        screencapture.location = "~/screenshots";
         dock.autohide = true;
         dock.mru-spaces = false;
         finder.AppleShowAllFiles = true;
@@ -73,13 +141,22 @@
         finder.AppleShowAllExtensions = true;
         finder.FXPreferredViewStyle = "clmv";
         loginwindow.LoginwindowText = "Hermann Elton";
-        screencapture.location = "~/Pictures/screenshots";
         screensaver.askForPasswordDelay = 10;
       };
 
-      # Homebrew needs to be installed on its own!
+      # services.sketchybar = {
+      #   enable = true;
+      #
+      #   extraPackages = [
+      #     pkgs.jq
+      #     pkgs.aerospace
+      #   ];
+      # };
       homebrew.enable = true;
       homebrew.onActivation.upgrade = true;
+      # homebrew.taps = [
+      #   "junian/homebrew-dotnet"
+      # ];
       homebrew.casks = [
           "ghostty"
           "hyperkey"
@@ -89,11 +166,16 @@
           "zsh-autosuggestions"
           "zsh-syntax-highlighting"
           "zsh-completions"
+          "ghcup"
+          # "powershell"
           "docker-machine"
           "nvm"
+          "node@24"
           "python@3.9"
+          # "dotnet@10"
           "gleam"
           "docker-compose"
+          "uv"
       ];
     };
   in

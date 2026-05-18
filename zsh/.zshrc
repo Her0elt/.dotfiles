@@ -126,6 +126,7 @@ esac
 # pnpm end
 #
 #
+
 printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh" }}\x9c'
 
 export NIX_CONF_DIR=/Users/hermannelton/.config/nix
@@ -137,7 +138,7 @@ export NIX_CONF_DIR=/Users/hermannelton/.config/nix
 
 
 
- export DOTNET_ROOT="/nix/store/381pjcl0yngb8pj8vv8h6pbqa93qcryi-dotnet-sdk-9.0.200/share/dotnet/sdk"
+export DOTNET_ROOT="/usr/local/share/dotnet"
 
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
@@ -147,3 +148,7 @@ export PATH="$HOME/.zigup:$HOME/.zig:$PATH"
 
 . "$HOME/.local/bin/env"
 export PATH="/Users/hermannelton/.pixi/bin:$PATH"
+
+
+[ -f "/Users/hermannelton/.ghcup/env" ] && . "/Users/hermannelton/.ghcup/env" # ghcup-env
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"

@@ -46,14 +46,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # check-further-callbacks = true
 # run = ['layout floating', 'move-node-to-workspace S']  # The callback itself
 
-[[on-window-detected]]
-if.app-name-regex-substring = 'finder'
-run = 'layout floating'
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'camera'
 run = 'layout floating'
-
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'ghostty'
@@ -70,6 +66,14 @@ run = "move-node-to-workspace 3"
 [[on-window-detected]]
 if.app-name-regex-substring = 'slack'
 run = "move-node-to-workspace 4"
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'teams'
+run = "move-node-to-workspace 5"
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'outlook'
+run = "move-node-to-workspace 5"
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'postman'
@@ -124,10 +128,8 @@ outer.right = 20
 #     activate
 # end tell'
 # '''
-[key-mapping.key-notation-to-key-code]
-unicorn = 'u'
 
-alt-ctrl-shift-f = 'fullscreen'
+ctrl-cmd-alt-f = 'fullscreen'
 alt-ctrl-f = 'layout floating tiling'
 
 alt-shift-left = 'join-with left'
@@ -138,8 +140,8 @@ alt-shift-right = 'join-with right'
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 ctrl-cmd-alt-slash = 'layout tiles horizontal vertical'
 ctrl-cmd-alt-comma = 'layout accordion horizontal vertical'
-
-# See: https://nikitabobko.github.io/AeroSpace/commands#focus
+#
+# # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 ctrl-cmd-alt-h = 'focus left'
 ctrl-cmd-alt-j = 'focus down'
 ctrl-cmd-alt-k = 'focus up'
@@ -163,6 +165,9 @@ ctrl-cmd-alt-3 = 'workspace 3'
 ctrl-cmd-alt-4 = 'workspace 4'
 ctrl-cmd-alt-5 = 'workspace 5'
 ctrl-cmd-alt-6 = 'workspace 6'
+ctrl-cmd-alt-7 = 'workspace 7'
+ctrl-cmd-alt-8 = 'workspace 8'
+ctrl-cmd-alt-9 = 'workspace 9'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 ctrl-cmd-alt-shift-1 = 'move-node-to-workspace 1'
@@ -171,16 +176,20 @@ ctrl-cmd-alt-shift-3 = 'move-node-to-workspace 3'
 ctrl-cmd-alt-shift-4 = 'move-node-to-workspace 4'
 ctrl-cmd-alt-shift-5 = 'move-node-to-workspace 5'
 ctrl-cmd-alt-shift-6 = 'move-node-to-workspace 6'
+ctrl-cmd-alt-shift-7 = 'move-node-to-workspace 7'
+ctrl-cmd-alt-shift-8 = 'move-node-to-workspace 8'
+ctrl-cmd-alt-shift-9 = 'move-node-to-workspace 9'
 
 ctrl-cmd-alt-tab = 'workspace-back-and-forth'
 ctrl-cmd-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
-
-# See: https://nikitabobko.github.io/AeroSpace/commands#mode
+#
+# # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 ctrl-cmd-alt-shift-semicolon = 'mode service'
 ctrl-cmd-alt-shift-enter = 'mode apps'
 
 ctrl-cmd-alt-a = 'exec-and-forget open -a /Applications/Arc.app'
 ctrl-cmd-alt-g = 'exec-and-forget open -a /Applications/Ghostty.app'
+ctrl-cmd-alt-s = 'exec-and-forget open ~/screenshots'
 
 
 # 'service' binding mode declaration.
@@ -194,7 +203,4 @@ f = [
 ] # Toggle between floating and tiling layout
 
 
-ctrl-cmd-alt-shift-7 = 'move-node-to-workspace 7'
-ctrl-cmd-alt-shift-8 = 'move-node-to-workspace 8'
-ctrl-cmd-alt-shift-9 = 'move-node-to-workspace 9'
 backspace = ['close-all-windows-but-current', 'mode main']

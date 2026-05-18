@@ -2,7 +2,13 @@ export XDG_CONFIG_HOME=$HOME/.config
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/.local/share/zig/
 export PATH=$PATH:~/.local/bin/tmux-cli
-bindkey -s ^f "~/.local/bin/tmux-cli sessionize\n"
-export GIT_EDITOR=$VIM
+bindkey -s ^f "~/.local/bin/tmux-wrapper project \n"
 export DOTFILES=$HOME/.dotfiles
+# export PATH="$HOME/.dotnet/tools:$PATH"
+export GIT_EDITOR=nvim
+export EDITOR=$GIT_EDITOR
+export VISUAL=$GIT_EDITOR
+export PATH="/Users/hermannelton/fvm/bin:$PATH"
+
+
 

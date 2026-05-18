@@ -318,8 +318,9 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       -- vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics [A]ll' })
+      -- vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      -- vim.keymap.set('n', '<leader>sd', builtin.diagnostics { severity_bound = 'Error' }, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
@@ -355,9 +356,11 @@ require('lazy').setup {
       'williamboman/mason-lspconfig.nvim',
       'saghen/blink.cmp',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+      -- {
+      --   'seblyng/roslyn.nvim',
+      --   opts = {},
+      -- },
       'Hoffs/omnisharp-extended-lsp.nvim',
-      -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
@@ -461,12 +464,12 @@ require('lazy').setup {
               callback = vim.lsp.buf.clear_references,
             })
           end
-          if client and client.name == 'omnisharp' then
-            map('gd', require('omnisharp_extended').telescope_lsp_definition, 'Omnisharp: [G]oto [D]efinition')
-            map('gr', require('omnisharp_extended').telescope_lsp_references, 'Omnisharp: [G]oto [R]eferences')
-            map('gI', require('omnisharp_extended').telescope_lsp_implementation, 'Omnisharp: [G]oto [I]mplementation')
-            map('<leader>D', require('omnisharp_extended').telescope_lsp_type_definition, 'Omnisharp: Type [D]efinition')
-          end
+          -- if client and client.name == 'omnisharp' then
+          --   map('gd', require('omnisharp_extended').telescope_lsp_definition, 'Omnisharp: [G]oto [D]efinition')
+          --   map('gr', require('omnisharp_extended').telescope_lsp_references, 'Omnisharp: [G]oto [R]eferences')
+          --   map('gI', require('omnisharp_extended').telescope_lsp_implementation, 'Omnisharp: [G]oto [I]mplementation')
+          --   map('<leader>D', require('omnisharp_extended').telescope_lsp_type_definition, 'Omnisharp: Type [D]efinition')
+          -- end
         end,
       })
 
@@ -488,12 +491,26 @@ require('lazy').setup {
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         ts_ls = {
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           init_options = {
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                location = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server',
+                languages = { 'vue' },
+              },
+            },
             preferences = {
               importModuleSpecifierPreference = 'non-relative',
               importModuleSpecifierEnding = 'minimal',
             },
           },
+        },
+        vue_ls = {
+          root_dir = function(fname)
+            return vim.fs.root(fname, { 'package.json', 'tsconfig.json', 'jsconfig.json', 'vite.config.ts', 'vite.config.js', 'nuxt.config.ts' })
+              or vim.fn.getcwd()
+          end,
         },
         astro = {},
         clangd = {},
@@ -511,6 +528,18 @@ require('lazy').setup {
         dockerls = {},
         dotls = {},
         csharpier = {},
+        -- roslyn = {
+        --   settings = {
+        --     ['csharp|inlay_hints'] = {
+        --       csharp_enable_inlay_hints_for_implicit_object_creation = true,
+        --       csharp_enable_inlay_hints_for_implicit_variable_types = true,
+        --     },
+        --     ['csharp|code_lens'] = {
+        --       dotnet_enable_references_code_lens = true,
+        --     },
+        --   },
+        --   filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
+        -- },
         omnisharp = {
           enable_roslyn_analysers = true,
           enable_import_completion = true,
@@ -529,6 +558,7 @@ require('lazy').setup {
           -- },
           filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
         },
+
         netcoredbg = {},
         gopls = {},
         html = {},
@@ -580,10 +610,22 @@ require('lazy').setup {
       --    :Mason
       --
       --  You can press `g?` for help in this menu
-      require('mason').setup()
+      require('mason').setup {
+        registries = {
+          'github:mason-org/mason-registry',
+          'github:Crashdummyy/mason-registry',
+        },
+      }
 
       -- Gleam setup
       require('lspconfig').gleam.setup {}
+      --
+      -- local util = require 'lspconfig.util'
+      --
+      -- require('lspconfig').kotlin_language_server.setup {
+      --   root_dir = util.root_pattern('settings.gradle', 'settings.gradle.kts', 'build.gradle', 'build.gradle.kts', 'pom.xml'),
+      -- }
+      --
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
@@ -604,12 +646,12 @@ require('lazy').setup {
         'netcoredbg',
         'flake8',
         'html-lsp',
-        'kotlin-language-server',
         'isort',
         'jedi-language-server',
         'kotlin-debug-adapter',
         'jdtls',
-        'kotlin-language-server',
+        -- 'kotlin-language-server',
+        'kotlin-lsp',
         'ktlint',
         'eslint',
         'lua-language-server',
@@ -628,20 +670,40 @@ require('lazy').setup {
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        ensure_installed = ensure_installed,
-        automatic_installation = true,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      for name, server in pairs(servers) do
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
+      -- IMPORTANT: Add this AFTER your mason-lspconfig.setup() and capabilities setup
+      -- This ensures ts_ls attaches to .vue files (required for Neovim 0.11+)
+
+      -- vim.api.nvim_create_autocmd('FileType', {
+      --   pattern = 'vue',
+      --   callback = function(args)
+      --     local root_dir = vim.fs.root(args.buf, { 'package.json', 'tsconfig.json', 'jsconfig.json' })
+      --     local init_options = {
+      --       preferences = {
+      --         importModuleSpecifierPreference = 'non-relative',
+      --         importModuleSpecifierEnding = 'minimal',
+      --       },
+      --       plugins = {
+      --         {
+      --           name = '@vue/typescript-plugin',
+      --           location = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server',
+      --           languages = { 'vue' },
+      --         },
+      --       },
+      --     }
+      --
+      --     vim.lsp.start {
+      --       name = 'ts_ls',
+      --       cmd = { 'typescript-language-server', '--stdio' },
+      --       root_dir = root_dir,
+      --       init_options = init_options,
+      --       capabilities = capabilities,
+      --     }
+      --   end,
+      -- })
     end,
   },
 
@@ -660,15 +722,25 @@ require('lazy').setup {
     },
     opts = {
       notify_on_error = false,
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
+      format_on_save = function(bufnr)
+        if vim.bo[bufnr].filetype == 'cs' then
+          return nil
+        end
+        return { timeout_ms = 50000, lsp_fallback = true }
+      end,
+      format_after_save = function(bufnr)
+        if vim.bo[bufnr].filetype ~= 'cs' then
+          return nil
+        end
+        return { lsp_fallback = true }
+      end,
       lang_to_ext = {
+        haskell = 'hs',
         bash = 'sh',
         c_sharp = 'cs',
         elixir = 'exs',
         javascript = 'js',
+        kotlin = { 'kt', 'kts' },
         julia = 'jl',
         latex = 'tex',
         markdown = 'md',
@@ -679,22 +751,43 @@ require('lazy').setup {
         typescript = 'ts',
       },
       formatters = {
-        csharpier = {
-          command = 'dotnet',
-          args = { 'csharpier', 'format' },
+        hs = { 'hindent' },
+        haskell = { 'hindent' },
+
+        -- csharpier = {
+        --   command = 'dotnet',
+        --   args = { 'csharpier', 'format', '--write-stdout' },
+        -- },
+        -- to_stdin = true,
+        resharper_cleanup = {
+          command = vim.fn.expand '~' .. '/.dotnet/tools/jb',
+          args = {
+            'cleanupcode',
+            '$FILENAME',
+            '--profile=Built-in: Reformat Code',
+          },
+          stdin = false,
         },
+        oxfmt = {},
       },
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
+        kotlin = { 'ktlint' },
+        kt = { 'ktlint' },
         --
-        typescript = { 'prettierd', 'eslint_d', stop_after_first = true },
-        typescriptreact = { 'prettierd', 'eslint_d', stop_after_first = true },
-        javascript = { 'prettierd', 'eslint_d', stop_after_first = true },
-        javascriptreact = { 'prettierd', 'eslint_d', stop_after_first = true },
-        cs = { 'csharpier' },
-        c_sharp = { 'csharpier' },
+        hs = { 'hindent' },
+        haskell = { 'hindent' },
+        vue = { 'oxfmt' },
+        typescript = { 'oxfmt', 'prettierd', 'eslint_d', stop_after_first = true },
+        typescriptreact = { 'oxfmt', 'prettierd', 'eslint_d', stop_after_first = true },
+        javascript = { 'oxfmt', 'prettierd', 'eslint_d', stop_after_first = true },
+        javascriptreact = { 'oxfmt', 'prettierd', 'eslint_d', stop_after_first = true },
+        -- cs = { 'csharpier' },
+        -- c_sharp = { 'csharpier' },
+        cs = { 'resharper_cleanup' },
+        c_sharp = { 'resharper_cleanup' },
         cpp = { 'clang_format' },
 
         -- Use the "_" filetype to run formatters on filetypes that don't
@@ -1382,83 +1475,34 @@ require('lazy').setup {
     'mfussenegger/nvim-dap',
     dependencies = {
       'leoluz/nvim-dap-go',
-      -- 'nicholasmata/nvim-dap-cs',
       'rcarriga/nvim-dap-ui',
       'theHamsta/nvim-dap-virtual-text',
       'nvim-neotest/nvim-nio',
       'williamboman/mason.nvim',
-      'GustavEikaas/easy-dotnet.nvim',
+      {
+        'Cliffback/netcoredbg-macOS-arm64.nvim',
+        config = function()
+          require('netcoredbg-macOS-arm64').setup(require 'dap')
+        end,
+      },
     },
     config = function()
+      local dap = require 'dap'
       local ui = require 'dapui'
 
       require('dapui').setup()
       require('dap-go').setup()
-      -- require('dap-cs').setup()
-
       require('nvim-dap-virtual-text').setup {}
-      local dap = require 'dap'
 
-      local debuggers_folder = vim.fn.stdpath 'data' .. '/mason'
-
-      dap.adapters.coreclr = {
-        type = 'executable',
-        command = debuggers_folder .. '/packages/netcoredbg/netcoredbg',
-        args = { '--interpreter=vscode' },
-      }
-
-      -- Handled by nvim-dap-go
-      -- dap.adapters.go = {
-      --   type = "server",
-      --   port = "${port}",
-      --   executable = {
-      --     command = "dlv",
-      --     args = { "dap", "-l", "127.0.0.1:${port}" },
-      --   },
-      -- }
-
-      -- local elixir_ls_debugger = vim.fn.exepath 'elixir-ls-debugger'
-      -- if elixir_ls_debugger ~= '' then
-      --   dap.adapters.mix_task = {
-      --     type = 'executable',
-      --     command = elixir_ls_debugger,
-      --   }
-      --
-      --   dap.configurations.elixir = {
-      --     {
-      --       type = 'mix_task',
-      --       name = 'phoenix server',
-      --       task = 'phx.server',
-      --       request = 'launch',
-      --       projectDir = '${workspaceFolder}',
-      --       exitAfterTaskReturns = false,
-      --       debugAutoInterpretAllModules = false,
-      --     },
-      --   }
-      -- end
-      --
-      --
-      dap.adapters.netcoredbg = dap.adapters.coreclr
-      dap.adapters.dotnet = dap.adapters.coreclr
-      dap.configurations.cs = {
-        {
-          type = 'coreclr',
-          name = 'attach - netcoredbg',
-          request = 'attach',
-          processId = require('dap.utils').pick_process,
-        },
-      }
+      require('her0elt.plugins.dotnet').setup(dap)
 
       vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
       vim.keymap.set('n', '<leader>gb', dap.run_to_cursor)
-
-      -- Eval var under cursor
       vim.keymap.set('n', '<leader>un', function()
         require('dapui').eval(nil, { enter = true })
       end)
-
       vim.keymap.set('n', '<F10>', function()
-        require('dapui').close()
+        ui.close()
       end)
       vim.keymap.set('n', '<F1>', dap.continue)
       vim.keymap.set('n', '<F2>', dap.step_into)
@@ -1481,25 +1525,23 @@ require('lazy').setup {
       end
     end,
   },
+  -- {
+  --   'GustavEikaas/easy-dotnet.nvim',
+  --   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+  --   config = function()
+  --     require('easy-dotnet').setup()
+  --   end,
+  -- },
   {
-    'GustavEikaas/easy-dotnet.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
-    config = function()
-      require('easy-dotnet').setup()
-    end,
+    'chrisgrieser/nvim-lsp-endhints',
+    event = 'LspAttach',
+    opts = {}, -- required, even if empty
   },
   {
     'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
     config = function()
       require('lsp_lines').setup()
       vim.keymap.set('', '<Leader>l', require('lsp_lines').toggle, { desc = 'Toggle lsp_lines' })
-    end,
-  },
-  {
-    'Cliffback/netcoredbg-macOS-arm64.nvim',
-    dependencies = { 'mfussenegger/nvim-dap' },
-    config = function()
-      require('netcoredbg-macOS-arm64').setup(require 'dap')
     end,
   },
   {
@@ -1553,7 +1595,99 @@ require('lazy').setup {
       end)
     end,
   },
-}
+  {
+    'kdheepak/lazygit.nvim',
+    lazy = true,
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
+    config = function()
+      require('telescope').load_extension 'lazygit'
+    end,
+  },
+  -- Source - https://stackoverflow.com/q
+  -- Posted by spinners, modified by community. See post 'Timeline' for change history
+  -- Retrieved 2025-11-24, License - CC BY-SA 4.0
 
+  {
+    'f-person/git-blame.nvim',
+    event = 'VeryLazy',
+    opts = {
+      enabled = 1,
+      message_template = '<author> • <summary> • <date>',
+      date_format = '%r',
+      virtual_text_column = 1,
+    },
+  },
+
+  -- {
+  --   'heilgar/nvim-http-client',
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     'hrsh7th/nvim-cmp', -- Optional but recommended for enhanced autocompletion
+  --     'nvim-telescope/telescope.nvim', -- Optional for better environment selection
+  --   },
+  --   event = 'VeryLazy',
+  --   ft = { 'http', 'rest' },
+  --   config = function()
+  --     require('http_client').setup {
+  --       -- Default configuration (works out of the box)
+  --       default_env_file = '.env.json',
+  --       request_timeout = 30000,
+  --       split_direction = 'right',
+  --       create_keybindings = true,
+  --       user_agent = 'heilgar/nvim-http-client', -- Custom User-Agent header
+  --
+  --       -- Profiling (timing metrics for requests)
+  --       profiling = {
+  --         enabled = true,
+  --         show_in_response = true,
+  --         detailed_metrics = true,
+  --       },
+  --
+  --       -- Default keybindings (can be customized)
+  --       keybindings = {
+  --         select_env_file = '<leader>hf',
+  --         set_env = '<leader>he',
+  --         run_request = '<leader>hr',
+  --         stop_request = '<leader>hx',
+  --         toggle_verbose = '<leader>hv',
+  --         toggle_profiling = '<leader>hp',
+  --         dry_run = '<leader>hd',
+  --         copy_curl = '<leader>hc',
+  --         save_response = '<leader>hs',
+  --         set_project_root = '<leader>hg',
+  --         get_project_root = '<leader>hgg',
+  --       },
+  --     }
+  --
+  --     -- Set up Telescope integration if available
+  --     if pcall(require, 'telescope') then
+  --       require('telescope').load_extension 'http_client'
+  --     end
+  --   end,
+  -- },
+  -- {
+  --   'seblyng/roslyn.nvim',
+  --   ---@module 'roslyn.config'
+  --   ---@type RoslynNvimConfig
+  --   opts = {
+  --     -- your configuration comes here; leave empty for default settings
+  --   },
+  -- },
+}
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
