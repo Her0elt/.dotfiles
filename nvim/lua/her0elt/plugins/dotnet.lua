@@ -12,6 +12,21 @@ local function find_csproj(dir)
   return find_csproj(parent)
 end
 
+local function find_solution(start)
+  local found = vim.fs.find(function(name)
+    return name == 'Main.slnx' or name:match '%.slnx$' or name:match '%.sln$'
+  end, { upward = true, path = start, type = 'file', limit = 5 })
+  if #found == 0 then
+    return nil
+  end
+  for _, f in ipairs(found) do
+    if f:match 'Main%.slnx$' then
+      return f
+    end
+  end
+  return found[1]
+end
+
 local function dotnet_run_attach()
   local co = coroutine.running()
   local cwd = vim.fn.getcwd()
@@ -200,6 +215,16 @@ function M.setup(dap)
   end)
 
   setup_test_runner(dap)
+
+  vim.api.nvim_create_user_command('DotnetTestAll', function()
+    local sln = find_solution(vim.fn.expand '%:p:h') or find_solution(vim.fn.getcwd())
+    if not sln then
+      vim.notify('No solution found', vim.log.levels.WARN)
+      return
+    end
+    vim.cmd 'belowright 15new'
+    vim.fn.termopen { 'dotnet', 'test', sln, '--nologo' }
+  end, { desc = 'Run dotnet test on nearest solution' })
 end
 
 return M

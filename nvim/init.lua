@@ -4,6 +4,22 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Ensure node (keg-only brew install) and brew bins are on PATH for nvim
+-- launched outside an interactive shell (GUI, file picker, etc.) so Node-based
+-- LSPs (ts_ls, vue_ls, tailwindcss, cssmodules_ls) can find `node`.
+-- Same for dotnet: mason's roslyn wrapper and jb (resharper_cleanup) exec `dotnet` from PATH.
+for _, p in ipairs {
+  '/opt/homebrew/opt/node@24/bin',
+  '/opt/homebrew/bin',
+  '/usr/local/bin',
+  '/usr/local/share/dotnet',
+  vim.fn.expand '~/.dotnet/tools',
+} do
+  if vim.fn.isdirectory(p) == 1 and not vim.env.PATH:find(p, 1, true) then
+    vim.env.PATH = p .. ':' .. vim.env.PATH
+  end
+end
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -356,11 +372,63 @@ require('lazy').setup {
       'williamboman/mason-lspconfig.nvim',
       'saghen/blink.cmp',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      -- {
-      --   'seblyng/roslyn.nvim',
-      --   opts = {},
-      -- },
-      'Hoffs/omnisharp-extended-lsp.nvim',
+      {
+        'seblyng/roslyn.nvim',
+        ft = { 'cs', 'razor' },
+        init = function()
+          vim.g.roslyn_nvim_settings = {
+            filewatching = 'roslyn',
+            broad_search = true,
+            lock_target = false,
+            choose_target = function(targets)
+              for _, t in ipairs(targets) do
+                if t:match 'Main%.slnx$' then
+                  return t
+                end
+              end
+              return targets[1]
+            end,
+          }
+        end,
+        config = function()
+          -- Override cmd to drop --razorSourceGenerator / --razorDesignTimePath
+          -- which the Crashdummyy-shipped roslyn 5.8.0 binary does not accept.
+          -- Re-add razor args when the package catches up to roslyn.nvim HEAD.
+          local mason = vim.fn.stdpath 'data' .. '/mason'
+          vim.lsp.config('roslyn', {
+            cmd = {
+              mason .. '/bin/roslyn',
+              '--logLevel=Information',
+              '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.log.get_filename()),
+              '--stdio',
+            },
+            settings = {
+              ['csharp|inlay_hints'] = {
+                csharp_enable_inlay_hints_for_implicit_object_creation = true,
+                csharp_enable_inlay_hints_for_implicit_variable_types = true,
+                csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+                csharp_enable_inlay_hints_for_types = true,
+                dotnet_enable_inlay_hints_for_parameters = true,
+                dotnet_enable_inlay_hints_for_literal_parameters = true,
+                dotnet_enable_inlay_hints_for_indexer_parameters = true,
+                dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+                dotnet_enable_inlay_hints_for_other_parameters = true,
+              },
+              ['csharp|code_lens'] = {
+                dotnet_enable_references_code_lens = true,
+                dotnet_enable_tests_code_lens = true,
+              },
+              ['csharp|background_analysis'] = {
+                dotnet_analyzer_diagnostics_scope = 'fullSolution',
+                dotnet_compiler_diagnostics_scope = 'fullSolution',
+              },
+              ['csharp|symbol_search'] = {
+                dotnet_search_reference_assemblies = true,
+              },
+            },
+          })
+        end,
+      },
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
@@ -464,12 +532,21 @@ require('lazy').setup {
               callback = vim.lsp.buf.clear_references,
             })
           end
-          -- if client and client.name == 'omnisharp' then
-          --   map('gd', require('omnisharp_extended').telescope_lsp_definition, 'Omnisharp: [G]oto [D]efinition')
-          --   map('gr', require('omnisharp_extended').telescope_lsp_references, 'Omnisharp: [G]oto [R]eferences')
-          --   map('gI', require('omnisharp_extended').telescope_lsp_implementation, 'Omnisharp: [G]oto [I]mplementation')
-          --   map('<leader>D', require('omnisharp_extended').telescope_lsp_type_definition, 'Omnisharp: Type [D]efinition')
-          -- end
+
+          if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+            vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+          end
+
+          if client and client.server_capabilities.codeLensProvider then
+            vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
+              buffer = event.buf,
+              callback = function()
+                vim.lsp.codelens.refresh { bufnr = event.buf }
+              end,
+            })
+            vim.lsp.codelens.refresh { bufnr = event.buf }
+            map('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens run')
+          end
         end,
       })
 
@@ -507,10 +584,7 @@ require('lazy').setup {
           },
         },
         vue_ls = {
-          root_dir = function(fname)
-            return vim.fs.root(fname, { 'package.json', 'tsconfig.json', 'jsconfig.json', 'vite.config.ts', 'vite.config.js', 'nuxt.config.ts' })
-              or vim.fn.getcwd()
-          end,
+          root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', 'vite.config.ts', 'vite.config.js', 'nuxt.config.ts' },
         },
         astro = {},
         clangd = {},
@@ -527,42 +601,14 @@ require('lazy').setup {
         svelte = {},
         dockerls = {},
         dotls = {},
-        csharpier = {},
-        -- roslyn = {
-        --   settings = {
-        --     ['csharp|inlay_hints'] = {
-        --       csharp_enable_inlay_hints_for_implicit_object_creation = true,
-        --       csharp_enable_inlay_hints_for_implicit_variable_types = true,
-        --     },
-        --     ['csharp|code_lens'] = {
-        --       dotnet_enable_references_code_lens = true,
-        --     },
-        --   },
-        --   filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
-        -- },
-        omnisharp = {
-          enable_roslyn_analysers = true,
-          enable_import_completion = true,
-          organize_imports_on_format = true,
-          enable_decompilation_support = true,
-          handlers = {
-            ['textDocument/definition'] = function()
-              return require('omnisharp_extended').handler()
-            end,
-          },
-          -- handlers = {
-          --   ['textDocument/definition'] = require('omnisharp_extended').definition_handler,
-          --   ['textDocument/typeDefinition'] = require('omnisharp_extended').type_definition_handler,
-          --   ['textDocument/references'] = require('omnisharp_extended').references_handler,
-          --   ['textDocument/implementation'] = require('omnisharp_extended').implementation_handler,
-          -- },
-          filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
-        },
-
-        netcoredbg = {},
         gopls = {},
         html = {},
-        kotlin_language_server = {},
+        -- JetBrains' IntelliJ-based Kotlin LSP (far better than the fwcd kotlin_language_server).
+        -- lspconfig ships the `kotlin_lsp` base (filetypes + root_markers) but its default cmd is
+        -- `kotlin-lsp`; mason installs the binary as `intellij-server`, so override only cmd.
+        kotlin_lsp = {
+          cmd = { vim.fn.stdpath 'data' .. '/mason/bin/intellij-server', '--stdio' },
+        },
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -618,7 +664,7 @@ require('lazy').setup {
       }
 
       -- Gleam setup
-      require('lspconfig').gleam.setup {}
+      vim.lsp.enable 'gleam'
       --
       -- local util = require 'lspconfig.util'
       --
@@ -640,7 +686,7 @@ require('lazy').setup {
         'svelte-language-server',
         'docker-compose-language-service',
         'dockerfile-language-server',
-        'omnisharp',
+        'roslyn',
         'eslint_d',
         'eslint',
         'netcoredbg',
@@ -653,12 +699,10 @@ require('lazy').setup {
         -- 'kotlin-language-server',
         'kotlin-lsp',
         'ktlint',
-        'eslint',
         'lua-language-server',
         'zls',
         'prettier',
         'prettierd',
-        'csharpier',
         'rust-analyzer',
         'sonarlint-language-server',
         'stylua',
@@ -666,7 +710,6 @@ require('lazy').setup {
         'typescript-language-server',
         'rustywind',
         'gopls',
-        'csharpier',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -714,7 +757,7 @@ require('lazy').setup {
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_fallback = true }
+          require('conform').format { async = true, lsp_format = 'fallback' }
         end,
         mode = '',
         desc = '[F]ormat buffer',
@@ -732,7 +775,10 @@ require('lazy').setup {
         if vim.bo[bufnr].filetype ~= 'cs' then
           return nil
         end
-        return { lsp_fallback = true }
+        return {
+          formatters = { 'resharper_cleanup' },
+          lsp_format = 'never',
+        }
       end,
       lang_to_ext = {
         haskell = 'hs',
@@ -753,6 +799,15 @@ require('lazy').setup {
       formatters = {
         hs = { 'hindent' },
         haskell = { 'hindent' },
+
+        -- ktlint exits 1 when a file has violations it can't auto-fix (e.g. wildcard imports),
+        -- yet it still writes the formatted code to stdout. Without this, conform treats exit 1
+        -- as a failure and silently drops the formatting (notify_on_error = false). The built-in
+        -- ktlint formatter omits exit_codes; rubocop/markdownlint set the same {0,1} for this.
+        -- Only this field is overridden; the built-in command/args are inherited.
+        ktlint = {
+          exit_codes = { 0, 1 },
+        },
 
         -- csharpier = {
         --   command = 'dotnet',
@@ -1118,30 +1173,50 @@ require('lazy').setup {
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- `master` is frozen and its query directives break on nvim 0.12; `main` is the rewrite.
+    -- Needs the `tree-sitter` CLI (nix-darwin) to compile parsers. Does not support lazy-loading.
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
     config = function()
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+      local ts = require 'nvim-treesitter'
+      ts.install { 'bash', 'c', 'c_sharp', 'html', 'http', 'json', 'graphql', 'kotlin', 'lua', 'markdown', 'markdown_inline', 'vim', 'vimdoc' }
 
-      ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
-        -- Autoinstall languages that are not installed
-        auto_install = true,
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
-
-      -- There are additional nvim-treesitter modules that you can use to interact
-      -- with nvim-treesitter. You should go explore a few and see what interests you:
-      --
-      --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-      --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-      --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+      -- main has no highlight/indent/auto_install modules; enable per buffer instead.
+      local available = nil
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('her0elt-treesitter', { clear = true }),
+        callback = function(ev)
+          local lang = vim.treesitter.language.get_lang(ev.match)
+          if not lang then
+            return
+          end
+          local function start()
+            if not vim.api.nvim_buf_is_valid(ev.buf) or not pcall(vim.treesitter.start, ev.buf, lang) then
+              return
+            end
+            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+          if vim.treesitter.language.add(lang) then
+            start()
+            return
+          end
+          -- Autoinstall languages that are not installed
+          available = available or ts.get_available()
+          if vim.tbl_contains(available, lang) then
+            ts.install(lang):await(function()
+              vim.schedule(start)
+            end)
+          end
+        end,
+      })
     end,
   },
 
   -- require 'her0elt.plugins.debug',
   require 'her0elt.plugins.indent_line',
+  require 'her0elt.plugins.http',
   -- { import = 'custom.plugins' },
   -- {
   --   'nvim-tree/nvim-tree.lua',
@@ -1495,6 +1570,7 @@ require('lazy').setup {
       require('nvim-dap-virtual-text').setup {}
 
       require('her0elt.plugins.dotnet').setup(dap)
+      require('her0elt.plugins.kotlin').setup(dap)
 
       vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
       vim.keymap.set('n', '<leader>gb', dap.run_to_cursor)
@@ -1633,53 +1709,6 @@ require('lazy').setup {
     },
   },
 
-  -- {
-  --   'heilgar/nvim-http-client',
-  --   dependencies = {
-  --     'nvim-lua/plenary.nvim',
-  --     'hrsh7th/nvim-cmp', -- Optional but recommended for enhanced autocompletion
-  --     'nvim-telescope/telescope.nvim', -- Optional for better environment selection
-  --   },
-  --   event = 'VeryLazy',
-  --   ft = { 'http', 'rest' },
-  --   config = function()
-  --     require('http_client').setup {
-  --       -- Default configuration (works out of the box)
-  --       default_env_file = '.env.json',
-  --       request_timeout = 30000,
-  --       split_direction = 'right',
-  --       create_keybindings = true,
-  --       user_agent = 'heilgar/nvim-http-client', -- Custom User-Agent header
-  --
-  --       -- Profiling (timing metrics for requests)
-  --       profiling = {
-  --         enabled = true,
-  --         show_in_response = true,
-  --         detailed_metrics = true,
-  --       },
-  --
-  --       -- Default keybindings (can be customized)
-  --       keybindings = {
-  --         select_env_file = '<leader>hf',
-  --         set_env = '<leader>he',
-  --         run_request = '<leader>hr',
-  --         stop_request = '<leader>hx',
-  --         toggle_verbose = '<leader>hv',
-  --         toggle_profiling = '<leader>hp',
-  --         dry_run = '<leader>hd',
-  --         copy_curl = '<leader>hc',
-  --         save_response = '<leader>hs',
-  --         set_project_root = '<leader>hg',
-  --         get_project_root = '<leader>hgg',
-  --       },
-  --     }
-  --
-  --     -- Set up Telescope integration if available
-  --     if pcall(require, 'telescope') then
-  --       require('telescope').load_extension 'http_client'
-  --     end
-  --   end,
-  -- },
   -- {
   --   'seblyng/roslyn.nvim',
   --   ---@module 'roslyn.config'

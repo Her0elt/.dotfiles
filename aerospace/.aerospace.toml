@@ -60,7 +60,15 @@ if.app-name-regex-substring = 'arc'
 run = "move-node-to-workspace 2"
 
 [[on-window-detected]]
+if.app-name-regex-substring = 'zen'
+run = "move-node-to-workspace 2"
+
+[[on-window-detected]]
 if.app-name-regex-substring = 'tableplus'
+run = "move-node-to-workspace 3"
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'mongodb compass'
 run = "move-node-to-workspace 3"
 
 [[on-window-detected]]
@@ -77,7 +85,8 @@ run = "move-node-to-workspace 5"
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'postman'
-run = "move-node-to-workspace 5"
+run = "move-node-to-workspace 6"
+
 
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
