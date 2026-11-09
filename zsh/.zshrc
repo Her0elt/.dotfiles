@@ -9,7 +9,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
-export FZF_DEFAULT_COMMAND='fdfind --type f'
+export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info --height=80%"
 export FZF_BASE="$HOME/fzf/"
 
@@ -138,7 +138,9 @@ export NIX_CONF_DIR=/Users/hermannelton/.config/nix
 
 
 
-export DOTNET_ROOT="/usr/local/share/dotnet"
+# DOTNET_ROOT + dotnet on PATH come from nix-darwin (see nix-darwin/flake.nix)
+export PATH="$PATH:$HOME/.dotnet/tools"
+
 
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
@@ -151,4 +153,3 @@ export PATH="/Users/hermannelton/.pixi/bin:$PATH"
 
 
 [ -f "/Users/hermannelton/.ghcup/env" ] && . "/Users/hermannelton/.ghcup/env" # ghcup-env
-export PATH="/opt/homebrew/opt/node@24/bin:$PATH"

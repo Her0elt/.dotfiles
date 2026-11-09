@@ -13,34 +13,26 @@
     # };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, ... }:
   let
-    configuration = { pkgs, ... }:
+    configuration = { pkgs, config, ... }:
     let
-      # dotnet9 = pkgs.writeShellScriptBin "dotnet9" ''
-      #   exec ${pkgs.dotnet-sdk_9}/bin/dotnet "$@"
-      # '';
-      # dotnet10 = pkgs.writeShellScriptBin "dotnet10" ''
-      #   exec ${pkgs.dotnet-sdk_10}/bin/dotnet "$@"
-      # '';
-      # dotnetDefault = pkgs.writeShellScriptBin "dotnet" ''
-      #   exec ${pkgs.dotnet-sdk_10}/bin/dotnet "$@"
-      # '';
-      dotnet = pkgs.dotnetCorePackages.dotnet_10.sdk;
-      dotnetWrapper = pkgs.writeShellScriptBin "dotnet" ''
-            export DOTNET_ROOT="${pkgs.dotnet-sdk_10}/share/dotnet"
-            exec "${dotnet}/share/dotnet/dotnet" "$@"
-      '';
+      # .NET 9 + 10 SDKs in one root. Bump with `nix flake update nixpkgs`.
+      dotnet = pkgs.dotnetCorePackages.combinePackages [
+        pkgs.dotnetCorePackages.sdk_9_0-bin
+        pkgs.dotnetCorePackages.sdk_10_0-bin
+      ];
     in {
       # List packages installed in system profile. To search by name, run:
       environment.variables = {
             EDITOR = "nvim";
-            DOTNET_ROOT = "/opt/homebrew/opt/dotnet@10/libexec";
+            DOTNET_ROOT = "${dotnet}/share/dotnet";
 
           };
       environment.systemPackages =
         [
           pkgs.pnpm
+          pkgs.tree-sitter # nvim-treesitter (main) compiles parsers with this
           pkgs.fzf
           pkgs.fd
           pkgs.go
@@ -49,12 +41,7 @@
           pkgs.tmux
           pkgs.docker
           pkgs.openjdk
-          # dotnetWrapper
-          # pkgs.dotnetCorePackages.dotnet_10.sdk
-
-          # dotnet9
-          # dotnet10
-          # dotnetDefault
+          dotnet
           pkgs.ripgrep
           pkgs.just
           pkgs.stack
@@ -77,7 +64,46 @@
           # pkgs.sketchybar
           # pkgs.sketchybar-app-font
           (pkgs.neovim.override { vimAlias = true; })
+
+          # --- moved from homebrew ---
+          pkgs.ansible
+          pkgs.azure-cli
+          pkgs.cocoapods
+          pkgs.coreutils-prefixed # g-prefixed (gls, gdate...) like brew; don't shadow BSD tools
+          pkgs.clang-tools # clangd/clang-format (brew llvm was keg-only)
+          pkgs.docker-compose
+          pkgs.fnm
+          pkgs.gh
+          pkgs.gleam
+          pkgs.erlang # gleam's BEAM runtime
+          pkgs.maestro
+          pkgs.pulumi-bin
+          pkgs.redpanda-client # rpk
+          pkgs.consul
+          pkgs.nomad
+          pkgs.vault
+          pkgs.mongodb-tools
+          pkgs.zoxide # tmux-sessionx zoxide-mode
+          pkgs.jankyborders # `borders`, started from .aerospace.toml
+          pkgs.ngrok
+          pkgs.nodejs_24
+          pkgs.postgresql_14
+          pkgs.pyenv
+          pkgs.python312
+          pkgs.uv
+          # only telnet from inetutils (full pkg would shadow ping/ifconfig/hostname)
+          (pkgs.runCommand "telnet" { } ''
+            mkdir -p $out/bin
+            ln -s ${pkgs.inetutils}/bin/telnet $out/bin/telnet
+          '')
         ];
+
+      fonts.packages = with pkgs.nerd-fonts; [
+        caskaydia-cove
+        hack
+        jetbrains-mono
+        meslo-lg
+      ];
       # services.nix-daemon.enable = true;
       nix.settings.experimental-features = "nix-command flakes";
       programs.zsh.enable = true;  # default shell on catalina
@@ -87,14 +113,15 @@
       nixpkgs.config.allowUnfree = true;
       security.pam.services.sudo_local.enable = true;
       security.pam.services.sudo_local.touchIdAuth = true;
-      system.activationScripts.postUserActivation.text = ''
-        /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-      '';
+      # system.activationScripts.postUserActivation.text = ''
+      #   /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+      # '';
 
       users.users.hermannelton.home = "/Users/hermannelton";
       # home-manager.backupFileExtension = "backup";
       # nix.configureBuildUsers = true;
       # nix.useDaemon = true;
+      system.primaryUser="hermannelton";
       system.defaults.CustomUserPreferences = {
         "com.apple.screencapture" = {
           location = "~/screenshots";
@@ -152,30 +179,76 @@
       #     pkgs.aerospace
       #   ];
       # };
+      # Homebrew tap trust (https://docs.brew.sh/Tap-Trust). Merged into both trust
+      # files before `brew bundle` runs: ~/.config/homebrew (interactive, XDG set)
+      # and ~/.homebrew (activation's sudo drops XDG_CONFIG_HOME).
+      system.activationScripts.extraActivation.text =
+        let
+          user = config.system.primaryUser;
+          home = config.users.users.${user}.home;
+          trust = pkgs.writeText "brew-trust.json" (builtins.toJSON {
+            trustedformulae = [
+              "azure/functions/azure-functions-core-tools"
+              "azure/functions/azure-functions-core-tools@4"
+              "microsoft/mssql-release/msodbcsql18"
+              "microsoft/mssql-release/mssql-tools18"
+              "blankoslo/tools/tim"
+            ];
+            trustedcasks = [
+              "confluentinc/confluent-hub-client/confluent-hub-client"
+            ];
+          });
+        in ''
+          echo "merging homebrew tap trust..." >&2
+          for f in "${home}/.homebrew/trust.json" "${home}/.config/homebrew/trust.json"; do
+            mkdir -p "$(dirname "$f")"
+            [ -s "$f" ] || echo '{}' > "$f"
+            ${pkgs.jq}/bin/jq -s 'reduce .[] as $o ({}; reduce ($o | to_entries[]) as $e (.; .[$e.key] = ((.[$e.key] // []) + $e.value | unique)))' \
+              "$f" ${trust} > "$f.tmp" && mv "$f.tmp" "$f"
+            chown -R ${user}:staff "$(dirname "$f")"
+            chmod 600 "$f"
+          done
+        '';
+
       homebrew.enable = true;
+      # msodbcsql18/mssql-tools18 block on an interactive EULA prompt during `brew bundle`
+      environment.etc."homebrew/brew.env".text = ''
+        HOMEBREW_ACCEPT_EULA=Y
+      '';
       homebrew.onActivation.upgrade = true;
-      # homebrew.taps = [
-      #   "junian/homebrew-dotnet"
-      # ];
+      homebrew.taps = [
+          "confluentinc/confluent-hub-client"
+          "microsoft/mssql-release"
+          "blankoslo/tools"
+          "azure/functions"
+      ];
+      # GUI apps stay as casks: nix .apps break self-updaters/Spotlight.
+      homebrew.onActivation.cleanup = "uninstall";
       homebrew.casks = [
           "ghostty"
           "hyperkey"
+          "docker-desktop"
+          "google-chrome"
+          "iterm2"
+          "slack"
+          "r-app"
+          "rstudio"
+          "zulu@17" # registers in /Library/Java (java_home), nix JDKs don't
+          "android-commandlinetools"
+          "confluent-hub-client"
       ];
+      # Not available in nixpkgs
       homebrew.brews = [
-          "postgresql@14"
-          "zsh-autosuggestions"
-          "zsh-syntax-highlighting"
-          "zsh-completions"
           "ghcup"
-          # "powershell"
           "docker-machine"
           "nvm"
-          "node@24"
           "python@3.9"
-          # "dotnet@10"
-          "gleam"
-          "docker-compose"
-          "uv"
+          "go-parquet-tools"
+          "zlib" # headers for pyenv python builds
+          "microsoft/mssql-release/msodbcsql18" # no nix ODBC driver on darwin
+          "microsoft/mssql-release/mssql-tools18" # sqlcmd + bcp
+          "blankoslo/tools/tim"
+          "azure/functions/azure-functions-core-tools@4" # nix pkg source-builds .NET
       ];
     };
   in

@@ -1,3 +1,5 @@
+# nix first: `brew shellenv` (~/.zprofile) runs path_helper, which pushes nix paths behind /usr/bin
+export PATH="/etc/profiles/per-user/$USER/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
 export XDG_CONFIG_HOME=$HOME/.config
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/.local/share/zig/

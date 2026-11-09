@@ -9,4 +9,5 @@ bin/**
 !/bin/.local/bin/pr-checkout
 !/bin/.local/bin/new-bg
 
+/nix-darwin/result
 nvim/.config/nvim/plugin/packer_compiled.lua

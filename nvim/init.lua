@@ -9,10 +9,9 @@ vim.g.maplocalleader = ' '
 -- LSPs (ts_ls, vue_ls, tailwindcss, cssmodules_ls) can find `node`.
 -- Same for dotnet: mason's roslyn wrapper and jb (resharper_cleanup) exec `dotnet` from PATH.
 for _, p in ipairs {
-  '/opt/homebrew/opt/node@24/bin',
   '/opt/homebrew/bin',
   '/usr/local/bin',
-  '/usr/local/share/dotnet',
+  '/run/current-system/sw/bin', -- nix-darwin (dotnet, etc.)
   vim.fn.expand '~/.dotnet/tools',
 } do
   if vim.fn.isdirectory(p) == 1 and not vim.env.PATH:find(p, 1, true) then
